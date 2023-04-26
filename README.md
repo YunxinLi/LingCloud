@@ -1,6 +1,6 @@
 # LingCloud
 
-The LingCloud 1.0 project seeks to enhance the large language model's capabilities by incorporating human-like eyes. 
+The LingCloud project seeks to enhance the large language model's capabilities by incorporating human-like eyes. 
 
 I would like to express my sincere gratitude to Xinyu Chen, team member, and my advisor, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), for their tremendous support. 
 
