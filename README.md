@@ -20,7 +20,10 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## Presentation
 
-some cases.
+Demo will come soon.
+
+We present some cases as follows.
+
 
 ## How to run
 
