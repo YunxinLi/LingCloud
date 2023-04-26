@@ -16,7 +16,7 @@ Here, you can see the detailed architecture and some experimental analyses of Li
 
 
 
-If you have any question, please feel free to concat me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
+If you have any question, please feel free to contact me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
 
 ## Presentation
 
