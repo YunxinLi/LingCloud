@@ -11,6 +11,11 @@ Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. G
 
 Here, you can see the detailed architecture and some experimental analyses of LingCloud 1.0.
 
+
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
+
+
+
 If you have any question, please feel free to concat me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
 
 ## Presentation
