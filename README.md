@@ -35,3 +35,6 @@ some cases.
 
 1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. Could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
 2. 
+
+
+## Acknowledge
