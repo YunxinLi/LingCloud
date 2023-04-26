@@ -2,7 +2,7 @@
 
 The LingCloud 1.0 project seeks to enhance the large language model's capabilities by incorporating human-like eyes. 
 
-I would like to express my sincere gratitude to Xinyu Chen, a valuable member of my team, and my advisor, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), for their tremendous support. 
+I would like to express my sincere gratitude to Xinyu Chen, team member, and my advisor, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), for their tremendous support. 
 
 Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. However, given our limited computational resources and financial constraints, we must develop a model that can perform tasks akin to GPT-4. The aim is to connect visual information to the large language model (brain), thus increasing its ability to comprehend the external world's infinite-granularity visual content. This have been explored in previous works such as BLIP-2 and others. As a result, we present the first version of LingCloud, LingCloud 1.0, which will be continuously improved to achieve the robust and efficient interaction between LLMs and external world.
 
