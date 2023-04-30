@@ -36,7 +36,8 @@ We present some cases as follows.
 
 ## Future Exploration
 
-1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. Could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
+1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. In this paper, we find that text instruction-following tuning LLMs have better generalization on performing multimodal interaction.
+For future, could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
 2. 
 
 
