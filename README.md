@@ -35,7 +35,7 @@ We present some cases as follows.
 
 ## How to run
 
-1. We will first release the evaluation dataset construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
+1. We first release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
 
 2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
 
