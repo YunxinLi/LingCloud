@@ -1,8 +1,8 @@
 # LingCloud
 
-The LingCloud project seeks to enhance the large language model's capabilities by incorporating human-like eyes. 
+The LingCloud project seeks to enhance the large language model's capability by incorporating human-like eyes. 
 
-I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), and [Lin Ma](https://forestlinma.com/), and team members, Xinyu Chen, for their tremendous supports. 
+I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), and [Lin Ma](https://forestlinma.com/), and team members, Xinyu Chen, for their tremendous supports.
 
 Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. Given our limited computational resources and financial supports, we also need to develop a model that can perform various tasks akin to GPT-4. The aim of this project is to connect visual information to the large language model (brain), thus increasing its ability to comprehend the external world's infinite-granularity visual content. As a result, we present the first version of LingCloud, LMEye, which will be continuously improved to achieve the robust and efficient interaction between LLMs and the external world.
 
@@ -39,7 +39,9 @@ We present some cases as follows.
 
 2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
 
+3. LMEye(OPT-IML-1.3B) and LMEye(Bloomz-7b1) will be the first version checkpoint.
 
+4. LMEye(BLIP-2), LMEye(various Vicuna variants) and LMEye(various LLaMA variants) will be the second verision checkpoint.
 
 
 ## Future Exploration
@@ -48,7 +50,6 @@ We present some cases as follows.
 For future, could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
 2. Hallucination.  
 
-
 ## Acknowledge
-1. We 
+1. Thanks the developer
 
