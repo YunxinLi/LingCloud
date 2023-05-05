@@ -10,7 +10,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## Architecture
 
-Here, you can see the detailed architecture and some experimental analyses of LingCloud 1.0.
+Here, you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
 
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
 
