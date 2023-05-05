@@ -39,17 +39,27 @@ We present some cases as follows.
 
 2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
 
-3. LMEye(OPT-IML-1.3B) and LMEye(Bloomz-7b1) will be the first version checkpoint.
+3. First version checkpoint: LMEye(OPT-IML-1.3B) and LMEye(Bloomz-7b1).
 
-4. LMEye(BLIP-2), LMEye(various Vicuna variants) and LMEye(various LLaMA variants) will be the second verision checkpoint.
+4. The second verision checkpoint: LMEye([BLIP-2](https://huggingface.co/docs/transformers/model_doc/blip-2)), LMEye(various [Vicuna](https://huggingface.co/lmsys/vicuna-13b-delta-v0) variants) and LMEye(various [LLaMA](https://huggingface.co/docs/transformers/main/model_doc/llama) variants).
 
 
-## Future Exploration
+## Discussion
 
 1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. In this paper, we find that text instruction-following tuning LLMs have better generalization on performing multimodal interaction.
 For future, could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
-2. Hallucination.  
+2. Hallucination. 
+3. Text Insturction tuning LLMs perform better than pure LLMs.
+4. Self-instructed multimodal instruction-following data is signigicant.
+5. How to perform image-text semantic alignment under this paradigm.
 
 ## Acknowledge
-1. Thanks the developer
+Thanks everyone for your contributions.
+If you're using LMEye in your research or applications, please cite using this BibTeX:
+
+## License
+This repository respects to Apache license 2.0.
+
+
+
 
