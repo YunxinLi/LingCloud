@@ -55,6 +55,7 @@ For future, could we jointly finetune LLMs with multimodal instruction data and 
 
 ## Acknowledge
 Thanks everyone for your contributions.
+
 If you're using LMEye in your research or applications, please cite using this BibTeX:
 
 ## License
