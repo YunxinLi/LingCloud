@@ -36,7 +36,7 @@ We present some cases as follows.
 
 2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
 
-3. First version checkpoint: LMEye(OPT-IML-1.3B) and LMEye(Bloomz-7b1).
+3. First version checkpoint: LMEye([OPT-IML-1.3B](https://huggingface.co/facebook/opt-iml-1.3b)) and LMEye([Bloomz-7b1](https://huggingface.co/bigscience/bloomz)).
 
 4. The second verision checkpoint: LMEye([BLIP-2](https://huggingface.co/docs/transformers/model_doc/blip-2)), LMEye(various [Vicuna](https://huggingface.co/lmsys/vicuna-13b-delta-v0) variants) and LMEye(various [LLaMA](https://huggingface.co/docs/transformers/main/model_doc/llama) variants).
 
