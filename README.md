@@ -35,6 +35,9 @@ We present some cases as follows.
 
 ## How to run
 
+1. We will first release the evaluation dataset construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
+
+2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
 
 
 
@@ -43,7 +46,7 @@ We present some cases as follows.
 
 1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. In this paper, we find that text instruction-following tuning LLMs have better generalization on performing multimodal interaction.
 For future, could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
-2. 
+2. Hallucination.  
 
 
 ## Acknowledge
