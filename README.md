@@ -24,6 +24,14 @@ Demo will come soon.
 
 We present some cases as follows.
 
+1. In-detail Description.
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/caption.png)
+
+2. VQA.
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/QA.png)
+
+3. ArtWork
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/case_2.png)
 
 ## How to run
 
@@ -39,3 +47,5 @@ For future, could we jointly finetune LLMs with multimodal instruction data and 
 
 
 ## Acknowledge
+1. We 
+
