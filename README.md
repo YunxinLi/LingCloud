@@ -6,17 +6,14 @@ I would like to express my sincere gratitude to all co-authors: my advisors, Pro
 
 Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. Given our limited computational resources and financial supports, we also need to develop a model that can perform various tasks akin to GPT-4. The aim of this project is to connect visual information to the large language model (brain), thus increasing its ability to comprehend the external world's infinite-granularity visual content. As a result, we present the first version of LingCloud, LMEye, which will be continuously improved to achieve the robust and efficient interaction between LLMs and the external world.
 
+If you have any question, please feel free to contact me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
 
 ## Architecture
 
 Here, you can see the detailed architecture and some experimental analyses of LingCloud 1.0.
 
-
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
 
-
-
-If you have any question, please feel free to contact me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
 
 ## Presentation
 
