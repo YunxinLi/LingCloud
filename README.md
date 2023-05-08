@@ -40,6 +40,8 @@ We present some cases as follows.
 
 4. The second verision checkpoint: LMEye([BLIP-2](https://huggingface.co/docs/transformers/model_doc/blip-2)), LMEye(various [Vicuna](https://huggingface.co/lmsys/vicuna-13b-delta-v0) variants) and LMEye(various [LLaMA](https://huggingface.co/docs/transformers/main/model_doc/llama) variants).
 
+5. Third version checkpoint: LMEye([MPT](https://huggingface.co/mosaicml/mpt-7b)).
+
 
 ## Discussion
 
