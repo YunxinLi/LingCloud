@@ -10,7 +10,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## Architecture
 
-Here, you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
+[Here](https://arxiv.org/abs/2305.03701), you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
 
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
 
@@ -34,7 +34,7 @@ We present some cases as follows.
 
 1. We first release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
 
-2. The codes and more powerful LMEye will come soon (Whether it's going well or not).
+2. The codes and more powerful LMEye will come soon.
 
 3. First version checkpoint: LMEye([OPT-IML-1.3B](https://huggingface.co/facebook/opt-iml-1.3b)) and LMEye([Bloomz-7b1](https://huggingface.co/bigscience/bloomz)).
 
@@ -53,7 +53,7 @@ For future, could we jointly finetune LLMs with multimodal instruction data and 
 ## Acknowledge
 Thanks everyone for your contributions.
 
-If you're using LMEye in your research or applications, please cite using this BibTeX:
+If you're using LMEye in your research or applications, please cite our work.
 
 ## License
 This repository respects to Apache license 2.0.
