@@ -57,12 +57,12 @@ Thanks everyone for your contributions.
 
 If you're using LMEye in your research or applications, please cite our work.
 
-@article{li2023lmeye,
-  title={LMEye: An Interactive Perception Network for Large Language Models},
-  author={Li, Yunxin and Hu, Baotian and Chen, Xinyu and Ma, Lin and Zhang, Min},
-  journal={arXiv preprint arXiv:2305.03701},
-  year={2023}
-}
+@article{li2023lmeye,<br>
+    title={LMEye: An Interactive Perception Network for Large Language Models},<br>
+    author={Li, Yunxin and Hu, Baotian and Chen, Xinyu and Ma, Lin and Zhang, Min},<br>
+    journal={arXiv preprint arXiv:2305.03701},<br>
+    year={2023}<br>
+}<br>
 
 ## License
 This repository respects to Apache license 2.0.
