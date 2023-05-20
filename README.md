@@ -5,7 +5,6 @@ The LingCloud project seeks to enhance the large language model's capability by 
   <a href="https://github.com/YunxinLi/LingCloud/"> <img src="https://img.shields.io/badge/LingCloud-LMEye-brightgreen" height="18px" alt="LingCloud">
   <a href="https://scholar.google.com/citations?user=U98QY0QAAAAJ&hl=en"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="18px"> </a>
   <a href="https://twitter.com/LyxTg"> <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" height="18px" alt="Yunxin Li">
-    
 </p> 
 
 I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), [Lin Ma](https://forestlinma.com/), and [Min Zhang](http://faculty.hitsz.edu.cn/MinZhang), and team members, Xinyu Chen and Wanqi Zhong, for their tremendous supports.
@@ -14,7 +13,7 @@ Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. G
 
 If you have any question, please feel free to contact me by e-mail: liyunxin987@163.com, Twitter: [@LyxTg](https://twitter.com/LyxTg), or submit your issue in the repository.
 
-## News
+## :fire: News
 
 [05.04] We release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
 
