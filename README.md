@@ -18,19 +18,19 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 [05.04] We release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
 
 
-## Architecture
+## :rocket: Architecture
 
 [Here](https://arxiv.org/abs/2305.03701), you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
 
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
 
-## Presentation
+## :sparkles: Presentation
 
 Demo will come soon.
 
 [Here](https://arxiv.org/abs/2305.03701), we present some cases in the experimental part and Appendix.
 
-## How to run
+## :rocket: How to run
 
 1. The codes and more powerful LMEye will come soon.
 
@@ -41,7 +41,7 @@ Demo will come soon.
 4. Third version checkpoint: LMEye([MPT](https://huggingface.co/mosaicml/mpt-7b)).
 
 
-## Discussion
+## :rotating_light: Discussion
 
 1. Finetune the LLMs with multimodal insturction data may decrease their performances on NLP. In this paper, we find that text instruction-following tuning LLMs have better generalization on performing multimodal interaction.
 For future, could we jointly finetune LLMs with multimodal instruction data and text-only instruction-tuning data? How could we alleviate this bias?<br>
