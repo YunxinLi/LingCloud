@@ -1,6 +1,10 @@
 # LingCloud
 
 The LingCloud project seeks to enhance the large language model's capability by incorporating human-like eyes. 
+<p> 
+  <a href="https://github.com/YunxinLi/LingCloud/"> <img src="https://colab.research.google.com/assets/colab-badge.svg" height="25px" alt="LingCloud">
+  <a href="https://scholar.google.com/citations?user=U98QY0QAAAAJ&hl=en"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="25px"> </a>
+</p> 
 
 I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), [Lin Ma](https://forestlinma.com/), and [Min Zhang](http://faculty.hitsz.edu.cn/MinZhang), and team members, Xinyu Chen and Wanqi Zhong, for their tremendous supports.
 
