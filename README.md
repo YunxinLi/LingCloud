@@ -15,7 +15,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[05.22]  We release the codes of LMEye and the tuned [checkpoints](https://huggingface.co/YunxinLi/models/) of LLaMA-7b/13b and Bloomz-7b1.
+[05.22]  We release the codes of LMEye and the tuned [checkpoints](https://huggingface.co/YunxinLi/) of LLaMA-7b/13b and Bloomz-7b1.
     
 [05.04] We release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4). [Here](https://huggingface.co/datasets/YunxinLi/Multimodal_Instruction_data_v1/blob/main/image.zip), you can also download these images and put them into the path /data/image/.
 
