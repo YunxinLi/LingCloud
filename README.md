@@ -22,7 +22,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :rocket: Architecture
 
-[Here](https://arxiv.org/abs/2305.03701), you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
+[Here](https://arxiv.org/pdf/2305.03701.pdf), you can see the detailed architecture and some experimental analyses of LingCloud 1.0, LMEye.
 
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/model.png)
 
@@ -30,7 +30,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 Demo will come soon.
 
-[Here](https://arxiv.org/abs/2305.03701), we present some cases in the experimental part and Appendix.
+[Here](https://arxiv.org/pdf/2305.03701.pdf), we present some cases in the experimental part and Appendix.
 
 ## :rocket: How to run
 All codes are shown in the file directory LMEye.
