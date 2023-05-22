@@ -15,7 +15,9 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[05.04] We release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4).
+[05.22]  We release the codes of LMEye and the tuned [checkpoints](https://huggingface.co/YunxinLi/models/) of LLaMA-7b/13b and Bloomz-7b1.
+    
+[05.04] We release the evaluation dataset(/data/multimodal_data_all_generation.txt) construted by GPT-3.5-turbo based on about 3.5k images from [MiniGPT-4](https://github.com/Vision-CAIR/MiniGPT-4). You can also use these images in the /data/image.zip.
 
 
 ## :rocket: Architecture
@@ -48,12 +50,13 @@ All codes are shown in the file directory LMEye.
 2. The second-stage instruction-tuning: run_llm_instruction.py.
 
     [Here](https://huggingface.co/datasets/YunxinLi/Multimodal_Instruction_data_v1), You can download the first version of Multimodal Instruction data, about 80w samples.
+    The Image source contains the COCO Caption, Flick30k, and the released multimodal instruction data from [LLaVA](https://github.com/haotian-liu/LLaVA).
 
 ### Test
 
 We release the checkpoints of instruction version for LLaMA-7b/13b and Bloomz-7b1. You can download them from the repository in [Huggingface Hub](https://huggingface.co/YunxinLi).
     
-The checkpoints could be put in the /LMEye/output/ or anywhere you like. You can get up and running quickly by running the following command.
+The checkpoints could be put in the /LMEye/output/ or anywhere you like. You can starting the LMEye quickly by running the following command.
 
 For Bloomz-7b1:
 
@@ -61,11 +64,11 @@ For Bloomz-7b1:
 
 For LLaMA-7b:
 
-`python /LMEye/LLMEye_test.py --llm_model LLaMA-7b --predict_model_dir: your path of the checkpoint`
+`python /LMEye/LLMEye_test.py --llm_model llama-7b --predict_model_dir: your path of the checkpoint`
 
 For LLaMA-13b:
 
-`python /LMEye/LLMEye_test.py --llm_model LLaMA-13b --predict_model_dir: your path of the checkpoint`
+`python /LMEye/LLMEye_test.py --llm_model llama-13b --predict_model_dir: your path of the checkpoint`
 
 More LMEye variants are coming soon!
 
