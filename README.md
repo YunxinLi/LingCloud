@@ -31,15 +31,14 @@ Demo will come soon.
 [Here](https://arxiv.org/abs/2305.03701), we present some cases in the experimental part and Appendix.
 
 ## :rocket: How to run
-
-1. The codes and more powerful LMEye will come soon.
-
-2. First version checkpoint: LMEye([OPT-IML-1.3B](https://huggingface.co/facebook/opt-iml-1.3b)) and LMEye([Bloomz-7b1](https://huggingface.co/bigscience/bloomz)).
-
-3. The second verision checkpoint: LMEye([BLIP-2](https://huggingface.co/docs/transformers/model_doc/blip-2)), LMEye(various [Vicuna](https://huggingface.co/lmsys/vicuna-13b-delta-v0) variants) and LMEye(various [LLaMA](https://huggingface.co/docs/transformers/main/model_doc/llama) variants).
-
-4. Third version checkpoint: LMEye([MPT](https://huggingface.co/mosaicml/mpt-7b)).
-
+All codes are shown in the file directory LMEye.
+    
+### Environment
+    1. You can follow the basic conda environment file LMEye_environment.yml to install the environment. 
+    
+    2. In /LMEye/, you should unzip the utils.zip and local transformers.zip to current path /LMEye/...
+    
+    3. 
 
 ## :rotating_light: Discussion
 
