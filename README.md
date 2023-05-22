@@ -34,11 +34,40 @@ Demo will come soon.
 All codes are shown in the file directory LMEye.
     
 ### Environment
-    1. You can follow the basic conda environment file LMEye_environment.yml to install the environment. 
+1. You can follow the basic conda environment file LMEye_environment.yml to install the environment. 
+
+2. In /LMEye/, you should unzip the utils.zip and local transformers.zip to the current path /LMEye/.
     
-    2. In /LMEye/, you should unzip the utils.zip and local transformers.zip to current path /LMEye/...
+### Train
+1. If you want to train a similar model from scratch, you could use the run_llm_pretrain.py to perform the first-stage multimodal pretraining.
+
+    Prepare the pretraining image-text pairs from the released corpus, and use the frozen CLIP-ViT-L/14 to extract the image feature.
+
+    Download the checkpoints of corresponding LLMs and modify the path in run_llm_pretrain.py
+
+2. The second-stage instruction-tuning: run_llm_instruction.py.
+
+    [Here](https://huggingface.co/datasets/YunxinLi/Multimodal_Instruction_data_v1), You can download the first version of Multimodal Instruction data, about 80w samples.
+
+### Test
+
+We release the checkpoints of instruction version for LLaMA-7b/13b and Bloomz-7b1. You can download them from the repository in [Huggingface Hub](https://huggingface.co/YunxinLi).
     
-    3. 
+The checkpoints could be put in the /LMEye/output/ or anywhere you like. You can get up and running quickly by running the following command.
+
+For Bloomz-7b1:
+
+`python /LMEye/LLMEye_test.py --llm_model bloomz-7b1 --predict_model_dir: your path of the checkpoint`
+
+For LLaMA-7b:
+
+`python /LMEye/LLMEye_test.py --llm_model LLaMA-7b --predict_model_dir: your path of the checkpoint`
+
+For LLaMA-13b:
+
+`python /LMEye/LLMEye_test.py --llm_model LLaMA-13b --predict_model_dir: your path of the checkpoint`
+
+More LMEye variants are coming soon!
 
 ## :rotating_light: Discussion
 
