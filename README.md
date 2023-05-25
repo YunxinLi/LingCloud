@@ -28,8 +28,14 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :sparkles: Presentation
 
-Demo will come soon.
+You can deploy your LMEye demo using the following simple commands:
 
+ ```
+ python /LMEye/app_demo.py --llm_model [model name] --model_path [model checkpoint]
+ ```
+
+    
+    
 [Here](https://arxiv.org/pdf/2305.03701.pdf), we present some cases in the experimental part and Appendix.
 
 ## :rocket: How to run
