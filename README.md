@@ -28,12 +28,13 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :sparkles: Presentation
 
-You can deploy your LMEye demo using the following simple commands:
+You can deploy a simple LMEye demo using the following command:
 
  ```
  python /LMEye/app_demo.py --llm_model [model name] --model_path [model checkpoint]
  ```
-
+ 
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/demo.png)
     
     
 [Here](https://arxiv.org/pdf/2305.03701.pdf), we present some cases in the experimental part and Appendix.
