@@ -15,6 +15,8 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
+[06.12] We release more diverse and high-quality Multimodal Instruction-following Data (V2), Please see here https://huggingface.co/datasets/YunxinLi/Multimodal_Insturction_Data_V2.
+    
 [05.25] We provide a file to deploy a simple demo.
 
 [05.22]  We release the codes of LMEye and the tuned [checkpoints](https://huggingface.co/YunxinLi/) of LLaMA-7b/13b and Bloomz-7b1.
