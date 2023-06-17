@@ -15,7 +15,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[06.12] We release more diverse and high-quality Multimodal Instruction-following Data (V2), Please see here https://huggingface.co/datasets/YunxinLi/Multimodal_Insturction_Data_V2.
+[06.12] We release more diverse and high-quality Multimodal Instruction-following Data (V2), termed LMEyeMID, Please see here https://huggingface.co/datasets/YunxinLi/Multimodal_Insturction_Data_V2.
     
 [05.25] We provide a file to deploy a simple demo.
 
