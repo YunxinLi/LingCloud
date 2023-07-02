@@ -11,4 +11,4 @@
 Flick-30k Images with long description are constructed by GPT-3.5-turbo. 
 
 
-
+![](https://github.com/YunxinLi/LingCloud/blob/main/images/demo.png)
