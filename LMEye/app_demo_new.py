@@ -11,7 +11,7 @@ from local_transformers.transformers_l.models.clip import CLIPModel, CLIPTokeniz
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Demo")
     parser.add_argument("--llm_model", default="blip2-flant5-xl")
-    parser.add_argument("--predict_model_dir", default="./blip2-instruction-lmeye/checkpoint_with_epoch1.pth")
+    parser.add_argument("--predict_model_dir", default="./output/blip2-instruction-lmeye/checkpoint_with_epoch1.pth")
     args = parser.parse_args()
 
     title = "Welcome to LMEye"
