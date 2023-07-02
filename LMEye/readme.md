@@ -8,8 +8,12 @@
 
 ## Downstream Evaluation.
 
+Flick-30k Images with long description are constructed by GPT-3.5-turbo.
 ![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_2.png)
+
 
 ![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_3.png)
 
-![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_1.png)
+
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_4.png)
+
