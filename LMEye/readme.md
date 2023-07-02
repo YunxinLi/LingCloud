@@ -8,4 +8,6 @@
 
 ## Downstream Evaluation.
 
-
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_2.png)
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_3.png)
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_4.png)
