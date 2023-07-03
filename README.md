@@ -62,11 +62,13 @@ All codes are shown in the file directory LMEye.
 ### Train
 1. If you want to train a similar model from scratch, you could use the run_llm_pretrain.py to perform the first-stage multimodal pretraining.
 
-    Prepare the pretraining image-text pairs from the released corpus, and use the frozen CLIP-ViT-L/14 to extract the image feature.
+   Prepare the pretraining image-text pairs from the released corpus such as Laion, CC3M, etc, and use the frozen visual encoder (e.g., CLIP-ViT-L/14) to extract the image feature.
 
-    Download the checkpoints of corresponding LLMs and modify the path in run_llm_pretrain.py
+   Download the checkpoints of corresponding LLMs and modify the path in run_llm_pretrain.py
 
-2. The second-stage instruction-tuning: run_llm_instruction.py.
+   *At this stage, more powerful visual encoders are more important than language models.*
+
+3. The second-stage instruction-tuning: run_llm_instruction.py.
 
     [Here](https://huggingface.co/datasets/YunxinLi/Multimodal_Instruction_data_v1), You can download the first version of Multimodal Instruction data, about 80w samples.
     The Image source contains the COCO Caption, Flick30k, and the released multimodal instruction data from [LLaVA](https://github.com/haotian-liu/LLaVA).
