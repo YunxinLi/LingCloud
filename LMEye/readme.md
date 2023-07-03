@@ -7,7 +7,7 @@
 3. ```python app_demo_new.py```
 
 ## Evaluation.
-We mainly evaluate our model and InstructBLIP to verify the effectiveness of Interactive Perception Network.
+We mainly evaluate our model and InstructBLIP to show the performance of Interactive Perception Network.
 
 Flick-30k Images with long description are constructed by GPT-3.5-turbo. 
 
