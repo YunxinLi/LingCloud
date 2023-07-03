@@ -17,7 +17,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 [07.02] A new verision of LMEye-IPN-FlanT5-xl are released. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye) to check it.
 
-[07.02] The online demo is no longer open for testing. We will continually provide the newest local demo with powerful LMEye variant.
+[07.02] The online demo is closed for fully upgrading. We will continually provide the newest local demo with powerful LMEye variant.
 
 [06.24] An online demo of LMEye(IPN-Bloomz-7b1): http://model.hitwds.cn:7080/. 
 
