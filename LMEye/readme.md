@@ -17,4 +17,4 @@ Flick-30k Images with long description are constructed by GPT-3.5-turbo.
 
 Evaluation Result on [MME](https://github.com/BradyFU/Awesome-Multimodal-Large-Language-Models/tree/Evaluation)
 
-![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation%20on%20MME.png)
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/evaluation_MME.png)
