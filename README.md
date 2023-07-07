@@ -15,7 +15,8 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[07.02] A new verision of LMEye-IPN-FlanT5-xl are released. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye) to RUN it. 
+[07.02] We release a new verision LMEye-IPN-FlanT5-xl. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye) to RUN it. 
+Its performance on perceptual and cognitive evaluation surpass most MLMs. Evaluation results are presented [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye).
 
 [07.02] The online demo is closed for fully upgrading. We will continually provide the newest local demo with powerful LMEye variant.
 
