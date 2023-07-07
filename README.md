@@ -20,7 +20,7 @@ Its performances on perceptual and cognitive evaluation surpass mostly MLLMs. Ev
 
 [07.02] The online demo is closed for fully upgrading. We will continually provide the newest local demo with powerful LMEye variant.
 
-[06.24] An online demo of LMEye(IPN-Bloomz-7b1): http://model.hitwds.cn:7080/. 
+[06.24] An online demo of LMEye (IPN-Bloomz-7b1): http://model.hitwds.cn:7080/. 
 
 [06.12] We release more diverse and high-quality Multimodal Instruction-following Data (V2), termed LMEyeMID, Please see here https://huggingface.co/datasets/YunxinLi/Multimodal_Insturction_Data_V2.
     
