@@ -15,6 +15,8 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
+[07.20] We have achieved the first place on the leaderboard of multimodal LLMs, [MMBench](https://opencompass.org.cn/leaderboard-multimodal).
+
 [07.17] Please see a new LMEye version, The dynamically updated test address is https://c718124152af2574d1.gradio.live. 
 It supports: Single-round Q&A without input images; Single-round Q&A for images; Chinese command input + English output; English command input + English output.
 
