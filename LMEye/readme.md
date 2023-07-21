@@ -9,7 +9,7 @@
 ## Evaluation.
 ### Evaluation Result on [MMBench](https://opencompass.org.cn/leaderboard-multimodal)
 
-![](https://github.com/YunxinLi/LingCloud/MMbench)
+![](https://github.com/YunxinLi/LingCloud/blob/main/LMEye/example_images/MMbench.png)
 
 
 
