@@ -7,7 +7,9 @@
 3. ```python app_demo_new.py```
 
 ## Evaluation.
-### Evaluation on [MMBench](https://opencompass.org.cn/leaderboard-multimodal)
+### Evaluation Result on [MMBench](https://opencompass.org.cn/leaderboard-multimodal)
+
+![](https://github.com/YunxinLi/LingCloud/MMbench)
 
 
 
