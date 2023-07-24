@@ -63,7 +63,7 @@ All codes are shown in the file directory LMEye.
 ### Environment
 1. You can follow the basic conda environment file LMEye_environment.yml to install the environment. 
 
-2. In /LMEye/, you should unzip the utils.zip and local transformers.zip to the current path /LMEye/.
+2. In /LMEye/, you can see detailed process for runing LMEye.
     
 ### Train
 1. If you want to train a similar model from scratch, you could use the run_llm_pretrain.py to perform the first-stage multimodal pretraining.
