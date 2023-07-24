@@ -1,7 +1,7 @@
 output/
 utils/__pycache__/
 Lmeye/__pycache__/
-Lmeye/Lmeye/clip/__pycache__/
+Lmeye/clip/__pycache__/
 image2clip.ipynb
 nohup.out
 dataset/

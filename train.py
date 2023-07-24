@@ -184,8 +184,6 @@ def main():
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
-
-
     # 加载 Lmeye 框架，载入 LLM 模型
     llm_model = Blip2InstructionQueryModel.from_pretrained(config.llm_path)
     llm_processor = Blip2Processor.from_pretrained(config.llm_path)
