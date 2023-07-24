@@ -7,7 +7,7 @@ The LingCloud project seeks to enhance the large language model's capability by 
   <a href="https://twitter.com/LyxTg"> <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" height="18px" alt="Yunxin Li">
 </p> 
 
-I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), [Lin Ma](https://forestlinma.com/), and [Min Zhang](http://faculty.hitsz.edu.cn/MinZhang), and team members, Xinyu Chen and Wanqi Zhong, for their tremendous supports.
+I would like to express my sincere gratitude to all co-authors: my advisors, Prof. [Baotian Hu](http://faculty.hitsz.edu.cn/hubaotian), [Lin Ma](https://forestlinma.com/), and [Min Zhang](http://faculty.hitsz.edu.cn/MinZhang), and team members, Xinyu Chen, Wanqi Zhong, and Yiran Cui, for their tremendous supports.
 
 Currently, GPT-4 has achieved unparalleled proficiency in image comprehension. Given our limited computational resources and financial supports, we also need to develop a model that can perform various tasks akin to GPT-4. The aim of this project is to connect visual information to the large language model (brain), thus increasing its ability to comprehend the external world's infinite-granularity visual content. As a result, we present the first version of LingCloud, [LMEye(IPN)](https://arxiv.org/abs/2305.03701), which will be continuously improved to achieve the robust and efficient interaction between LLMs and the external world.
 
