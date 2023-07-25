@@ -15,13 +15,13 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[07.20] We have achieved the first place on the leaderboard of multimodal LLMs, [MMBench](https://opencompass.org.cn/leaderboard-multimodal).
+[07.20] We have achieved the first place on the leaderboard of multimodal LLMs with less parameters, [MMBench](https://opencompass.org.cn/leaderboard-multimodal).
 
 [07.17] Please see a new LMEye version, The dynamically updated test address is https://ccbde596bb351dc972.gradio.live. 
 It supports: Single-round Q&A without input images; Single-round Q&A for images; Chinese command input + English output; English command input + English output.
 
-[07.02] We release a new verision LMEye v0.1. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye) to RUN it. 
-Its performances on perceptual and cognitive evaluation surpass mostly MLLMs. Evaluation results are presented [here](https://github.com/YunxinLi/LingCloud/tree/main/LMEye).
+[07.02] We release a new verision LMEye v0.1. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/Lmeye) to RUN it. 
+Its performances on perceptual and cognitive evaluation surpass mostly MLLMs. Evaluation results are presented [here](https://github.com/YunxinLi/LingCloud/tree/main/Lmeye).
 
 [07.02] The online demo is closed for fully upgrading. We will continually provide the newest local demo with powerful LMEye variant.
 
