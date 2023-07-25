@@ -49,7 +49,7 @@ class MMEvalDataset(Dataset):
                     query, answer = text.split('\t')[:2]
                     input_data = img_human_prompt + query + imgd_assistant_prompt
 
-                    token_input = llm_processor.tokenizer([input_data], add_special_tokens = False, padding = 'max_length', max_length = 512, return_tensors = "pt")
+                    token_input = llm_processor.tokenizer([input_data], add_special_tokens = True, padding = 'max_length', max_length = 512, return_tensors = "pt")
                     input_ids = token_input["input_ids"]
                     input_attention_mask = token_input["attention_mask"]
 

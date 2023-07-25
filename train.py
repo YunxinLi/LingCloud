@@ -20,7 +20,7 @@ from torch.optim import AdamW
 
 from Lmeye.lmeye_model import Blip2InstructionQueryModel
 from Lmeye.lmeye_processor import Blip2Processor
-from Lmeye.lmeye_dataset import llm_extra_dataset
+from Lmeye.lmeye_dataset import TrainDataset
 from Lmeye.lmeye_config import *
 
 from utils.mme_eval import *
@@ -69,12 +69,31 @@ def train(
                 attention_mask = batch["attention_mask"].squeeze().cuda(),
             )
             loss: torch.FloatTensor = model_output.loss
-            '''
-            probs = F.softmax(model_output.logits, dim = -1)
-            predicted_token_ids = torch.argmax(probs, dim = -1)
-            predicted_text = lmeye_processor.tokenizer.batch_decode(predicted_token_ids, skip_special_tokens = True)
-            print(predicted_text)
-            '''
+
+            with torch.no_grad():
+                text = ["! " * 37] * batch["inputs"].size(0)
+                clip_text = clip_tokenizer(text, return_tensors = "pt")
+                clip_text_ids = clip_text["input_ids"].cuda()
+                
+                generate_ids = model.generate(
+                    input_ids = batch["inputs"].squeeze().cuda(),
+                    pixel_values =  batch["image"].cuda(),
+                    attention_mask = batch["attention_mask"].squeeze().cuda(),
+                    imgd_token_id = 32100,
+                    imgq_token_id = 32101,
+                    num_beams = 5,
+                    temperature = 0.2,
+                    top_p = 1,
+                    top_k = 3,
+                    clip_text_input = clip_text_ids,
+                    max_new_tokens = 128,
+                )
+
+                output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
+                #print(batch["input_text"])
+                #print(batch["ground_truth"])
+                #print(output)
+                #print(loss)
 
             if config.gradient_accumulation_steps > 1:
                 loss = loss / config.gradient_accumulation_steps
@@ -118,35 +137,6 @@ def train(
                         _use_new_zipfile_serialization = False
                     )
 
-        if "MMBench" in eval_dataloader_dict and eval_dataloader_dict["MMBench"] is not None:
-            mmbench_metrics = MMBenchCalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MMBench")
-            mmbench_metrics.del_data()
-            model.eval()
-
-            for step, batch in tqdm(enumerate(eval_dataloader_dict["MMBench"])):
-                with torch.no_grad():
-                    text = ["! " * 37] * batch["inputs"].size(0)
-                    clip_text = clip_tokenizer(text, return_tensors = "pt")
-                    clip_text_ids = clip_text["input_ids"].cuda()
-                    
-                    generate_ids = model.generate(
-                        input_ids = batch["inputs"].squeeze().cuda(),
-                        pixel_values =  batch["image"].cuda(),
-                        attention_mask = batch["attention_mask"].squeeze().cuda(),
-                        imgd_token_id = 32100,
-                        imgq_token_id = 32101,
-                        num_beams = 5,
-                        temperature = 0.2,
-                        top_p = 1,
-                        top_k = 3,
-                        clip_text_input = clip_text_ids,
-                        max_new_tokens = 16,
-                    )
-
-                    output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
-                    mmbench_metrics.save_data(output, batch)
-            torch.cuda.empty_cache()
-
         if "MME" in eval_dataloader_dict and eval_dataloader_dict["MME"] is not None:
             mme_metrics = MMECalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MME")
             mme_metrics.del_data()
@@ -177,6 +167,35 @@ def train(
             torch.cuda.empty_cache()
             mme_metrics.process_result()
 
+        if "MMBench" in eval_dataloader_dict and eval_dataloader_dict["MMBench"] is not None:
+            mmbench_metrics = MMBenchCalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MMBench")
+            mmbench_metrics.del_data()
+            model.eval()
+
+            for step, batch in tqdm(enumerate(eval_dataloader_dict["MMBench"])):
+                with torch.no_grad():
+                    text = ["! " * 37] * batch["inputs"].size(0)
+                    clip_text = clip_tokenizer(text, return_tensors = "pt")
+                    clip_text_ids = clip_text["input_ids"].cuda()
+                    
+                    generate_ids = model.generate(
+                        input_ids = batch["inputs"].squeeze().cuda(),
+                        pixel_values =  batch["image"].cuda(),
+                        attention_mask = batch["attention_mask"].squeeze().cuda(),
+                        imgd_token_id = 32100,
+                        imgq_token_id = 32101,
+                        num_beams = 5,
+                        temperature = 0.2,
+                        top_p = 1,
+                        top_k = 3,
+                        clip_text_input = clip_text_ids,
+                        max_new_tokens = 16,
+                    )
+
+                    output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
+                    mmbench_metrics.save_data(output, batch)
+            torch.cuda.empty_cache()
+
 def main():
     seed = config.seed
     random.seed(seed)
@@ -189,17 +208,21 @@ def main():
     llm_processor = Blip2Processor.from_pretrained(config.llm_path)
 
     # 加载数据集
-    train_dataset = llm_extra_dataset(config.dataset, llm_processor)
+    train_dataset = TrainDataset(config.dataset, llm_processor)
     train_sampler = RandomSampler(train_dataset, num_samples = 2000)
     train_loader = DataLoader(train_dataset, batch_size = config.batch_size, sampler = train_sampler)
     
     # MME 测试集
-    mme_eval_dataset = MMEvalDataset("./dataset/MME", llm_processor)
-    mme_eval_loader = DataLoader(mme_eval_dataset, batch_size = 8)
+    if config.mme_dataset is not None:
+        mme_eval_dataset = MMEvalDataset("/home/Lmeye/dataset/MME", llm_processor)
+        mme_eval_loader = DataLoader(mme_eval_dataset, batch_size = 8)
+    else: mme_eval_loader = None
 
     # MMBench 测试集
-    mmbench_eval_dataset = MMBenchDataset("./dataset/MMBench/mmbench_dev_20230712.tsv", llm_processor)
-    mmbench_eval_loader = DataLoader(mmbench_eval_dataset, batch_size = 6)
+    if config.mmbench_dataset is not None:
+        mmbench_eval_dataset = MMBenchDataset("/home/Lmeye/dataset/MMBench/mmbench_dev_20230712.tsv", llm_processor)
+        mmbench_eval_loader = DataLoader(mmbench_eval_dataset, batch_size = 6)
+    else: mmbench_eval_loader = None
 
     # 载入 CLIP 模型
     clip_path = "openai/clip-vit-large-patch14"
@@ -210,8 +233,8 @@ def main():
 
     # 冻结层
     llm_model.query_tokens.requires_grad = False
-    for name, parameter in llm_model.language_projection.named_parameters():
-        parameter.requires_grad = False
+    # for name, parameter in llm_model.language_projection.named_parameters():
+    #    parameter.requires_grad = False
 
     for name, parameter in llm_model.language_model.named_parameters():
         parameter.requires_grad = False
@@ -238,7 +261,7 @@ def main():
         train_dataloader = train_loader,
         eval_dataloader_dict = {
             "MME": mme_eval_loader,
-            "MMBench": None,
+            "MMBench": mmbench_eval_loader,
         },
         model = model,
         lmeye_processor = llm_processor,

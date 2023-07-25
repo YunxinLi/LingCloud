@@ -3,7 +3,7 @@ import torch.utils.checkpoint
 from torch import nn
 from torch.nn import CrossEntropyLoss
 
-from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM
+from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoModel
 from transformers import (
     Blip2Config,
     Blip2PreTrainedModel,
@@ -77,9 +77,10 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
 
         self.language_projection = nn.Linear(config.qformer_config.hidden_size, config.text_config.hidden_size)
         if config.use_decoder_only_language_model:
-            language_model = AutoModelForCausalLM.from_config(config.text_config)
+            language_model = AutoModelForCausalLM.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code = True)
         else:
             language_model = AutoModelForSeq2SeqLM.from_config(config.text_config)
+        #language_model = AutoModel.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code=True).cuda()
         self.language_model = language_model
  
         self.instruction_embedding_imgd = nn.Parameter(torch.randn(1, config.text_config.hidden_size))
