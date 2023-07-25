@@ -111,7 +111,7 @@ if __name__ == '__main__':
             clip_text = clip_tokenizer(text, return_tensors="pt")
             clip_text_ids = clip_text["input_ids"].cuda()
             inputs["clip_text_input"] = clip_text_ids
-
+ 
             generate_ids = model.generate(
                 **inputs,
                 num_beams = beam_size,
