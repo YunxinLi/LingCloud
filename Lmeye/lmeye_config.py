@@ -1,7 +1,7 @@
 import argparse
 from argparse import Namespace
 from pydantic import BaseModel
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 class Config(BaseModel):
     """
@@ -20,6 +20,12 @@ class Config(BaseModel):
     '''The checkpoint path need to load'''
     dataset: str                        = "/root/dataset/LLaVA-CC3M-Pretrain-595K/chat.json"
     '''The train dataset path need to load'''
+    mme_dataset: Optional[str]          = None # "./dataset/MME"
+    '''MME eval dataset'''
+    mmbench_dataset: Optional[str]      = None # "./dataset/MMBench/mmbench_dev_20230712.tsv"
+    '''MMBench eval dataset'''
+    decoder_only: bool                  = False
+    '''LLM type: encoder-decoder or deco+der-only'''
 
     num_train_epochs: int               = 20
     '''The number of train epochs'''
@@ -52,9 +58,11 @@ def update_config_values(base_config: Config, args_config: Namespace) -> None:
             argparse data.
     """
     for key, value in vars(args_config).items():
-        print(key, value)
         if value is not None:
             setattr(base_config, key, value)
+    
+    for key, value in base_config:
+        print("{}: {}".format(key, value))
 
 
 def parse_arguments() -> Config:
@@ -69,12 +77,15 @@ def parse_arguments() -> Config:
     parser = argparse.ArgumentParser(description = 'Config data')
 
     for key, value in base_config:
-        eval("parser.add_argument('--{args_name}', type = {args_type})"
-             .format(args_name = key, args_type = value.__class__.__name__))
+        if value is not None:
+            eval("parser.add_argument('--{args_name}', type = {args_type})"
+                .format(args_name = key, args_type = value.__class__.__name__))
+        else:
+            eval("parser.add_argument('--{args_name}', default = None)"
+                .format(args_name = key))
 
     args = parser.parse_args()
     update_config_values(base_config, args)
     return base_config
-
 
 config = parse_arguments()
