@@ -12,7 +12,7 @@ class TrainDataset(Dataset):
         self.json_data = json.loads(chat_json)
         self.llm_processor = llm_processor
         if debug:
-            self.json_data = self.json_data[:1000]
+            self.json_data = self.json_data
 
         img_human_prompt = "Human: "
         imgd_assistant_prompt = "<img-q> <img-d> <img-d> <img-d> <img-d> <img-d> Assistant:"

@@ -27,11 +27,13 @@ class Config(BaseModel):
     decoder_only: bool                  = False
     '''LLM type: encoder-decoder or deco+der-only'''
 
+    num_samples: int                    = 10000
+    '''The number of data sampled from the training set in one training epoch'''
     num_train_epochs: int               = 20
     '''The number of train epochs'''
     batch_size: int                     = 2
     '''Train/eval batch size'''
-    gradient_accumulation_steps: int    = 16
+    gradient_accumulation_steps: int    = 8
     '''Train gradient accumulation steps'''
     valid_steps: int                    = 30
     '''Valid steps'''

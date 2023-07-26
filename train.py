@@ -54,7 +54,7 @@ def train(
 
     for epoch in range(config.num_train_epochs):
         model.train()
-        for step, batch in tqdm(enumerate(train_dataloader)):
+        for step, batch in enumerate(train_dataloader):
             text = ["! " * 37] * batch["inputs"].size(0)
             clip_text = clip_tokenizer(text, return_tensors = "pt")
             clip_text_ids = clip_text["input_ids"].cuda()
@@ -69,7 +69,7 @@ def train(
                 attention_mask = batch["attention_mask"].squeeze().cuda(),
             )
             loss: torch.FloatTensor = model_output.loss
-
+            '''
             with torch.no_grad():
                 text = ["! " * 37] * batch["inputs"].size(0)
                 clip_text = clip_tokenizer(text, return_tensors = "pt")
@@ -94,7 +94,7 @@ def train(
                 #print(batch["ground_truth"])
                 #print(output)
                 #print(loss)
-
+            '''
             if config.gradient_accumulation_steps > 1:
                 loss = loss / config.gradient_accumulation_steps
 
@@ -142,7 +142,7 @@ def train(
             mme_metrics.del_data()
             model.eval()
 
-            for step, batch in tqdm(enumerate(eval_dataloader_dict["MME"])):
+            for step, batch in enumerate(eval_dataloader_dict["MME"]):
                 with torch.no_grad():
                     text = ["! " * 37] * batch["inputs"].size(0)
                     clip_text = clip_tokenizer(text, return_tensors = "pt")
@@ -172,7 +172,7 @@ def train(
             mmbench_metrics.del_data()
             model.eval()
 
-            for step, batch in tqdm(enumerate(eval_dataloader_dict["MMBench"])):
+            for step, batch in enumerate(eval_dataloader_dict["MMBench"]):
                 with torch.no_grad():
                     text = ["! " * 37] * batch["inputs"].size(0)
                     clip_text = clip_tokenizer(text, return_tensors = "pt")
@@ -200,16 +200,16 @@ def main():
     seed = config.seed
     random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    torch.manual_seed(seed) 
     torch.cuda.manual_seed(seed)
-
+ 
     # 加载 Lmeye 框架，载入 LLM 模型
     llm_model = Blip2InstructionQueryModel.from_pretrained(config.llm_path)
     llm_processor = Blip2Processor.from_pretrained(config.llm_path)
 
     # 加载数据集
     train_dataset = TrainDataset(config.dataset, llm_processor)
-    train_sampler = RandomSampler(train_dataset, num_samples = 2000)
+    train_sampler = RandomSampler(train_dataset, num_samples = 10000)
     train_loader = DataLoader(train_dataset, batch_size = config.batch_size, sampler = train_sampler)
     
     # MME 测试集
