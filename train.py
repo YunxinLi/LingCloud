@@ -71,7 +71,7 @@ def train(
             loss: torch.FloatTensor = model_output.loss
             '''
             with torch.no_grad():
-                text = ["! " * 37] * batch["inputs"].size(0)
+                text = ["! " * 39] * batch["inputs"].size(0)
                 clip_text = clip_tokenizer(text, return_tensors = "pt")
                 clip_text_ids = clip_text["input_ids"].cuda()
                 
