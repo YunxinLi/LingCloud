@@ -63,7 +63,7 @@ All codes are shown in the file directory LMEye.
 ### Environment
 1. You can follow the basic conda environment file LMEye_environment.yml to install the environment. 
 
-2. In /LMEye/, you can see detailed process for runing LMEye.
+2. You only need to run the train.py, achieving a LMEye variant based on BLIP-2.
     
 ### Train
 1. If you want to train a similar model from scratch, you could use the train.py to perform the first-stage multimodal pretraining.
@@ -80,6 +80,8 @@ All codes are shown in the file directory LMEye.
     The image source contains the COCO Caption, Flick30k, and the released multimodal instruction data from [LLaVA](https://github.com/haotian-liu/LLaVA).
 
 ### Test
+
+*The following test process about previous LMEye variant could be ignored.*
 
 We release the checkpoints of instruction version for LLaMA-7b/13b and Bloomz-7b1. You can download them from the repository in [Huggingface Hub](https://huggingface.co/YunxinLi).
     
