@@ -21,7 +21,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 It supports: Single-round Q&A without input images; Single-round Q&A for images; Chinese command input + English output; English command input + English output.
 
 [07.02] We release a new verision LMEye v0.1. Please follow [here](https://github.com/YunxinLi/LingCloud/tree/main/Lmeye) to RUN it. 
-Its performances on perceptual and cognitive evaluation surpass mostly MLLMs. Evaluation results are presented [here](https://github.com/YunxinLi/LingCloud/tree/main/Lmeye).
+Its performances on perceptual and cognitive evaluation surpass mostly MLLMs.
 
 [07.02] The online demo is closed for fully upgrading. We will continually provide the newest local demo with powerful LMEye variant.
 
