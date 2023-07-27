@@ -49,7 +49,7 @@ Its performances on perceptual and cognitive evaluation surpass mostly MLLMs. Ev
 You can deploy a simple LMEye demo using the following command:
 
  ```
- python /LMEye/app_demo.py --llm_model [model name] --model_path [model checkpoint]
+ python app_demo.py
  ```
  
 ![](https://github.com/YunxinLi/LingCloud/blob/main/images/demo.png)
