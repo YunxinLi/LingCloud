@@ -286,7 +286,8 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
 
             clip_hidden_states = torch.concat(
                 [clip_base_embeds[:, 0, :].unsqueeze(dim=1), query_output, pre_query,
-                 clip_base_embeds[:, -1, :].unsqueeze(dim=1)], dim=1)
+                 clip_base_embeds[:, -1, :].unsqueeze(dim=1)],
+            dim = 1)
 
             clip_pooled_output = self.clip.text_model(input_ids = clip_text_input, hidden_states = clip_hidden_states)[0]
             clip_pooled_output = clip_pooled_output[:, -5:, :]
