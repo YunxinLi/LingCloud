@@ -13,9 +13,11 @@ eval_type_dict = {
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from PIL import Image
+import torch
 import os
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
+from Lmeye.lmeye_config import *
 
 class MMEvalDataset(Dataset):
     def __init__(self, input_path, llm_processor):
@@ -31,9 +33,6 @@ class MMEvalDataset(Dataset):
         self.all_input_text = []
         self.all_type = []
 
-        img_human_prompt = "Human: <img>\n"
-        imgd_assistant_prompt = "\n <img-q> <img-d> <img-d> <img-d> <img-d> <img-d>\nAssistant:"
-
         for eval_type in self.eval_type_list:
             full_path = os.path.join(input_path, eval_type, "images")
             for image_name in os.listdir(full_path):
@@ -44,22 +43,42 @@ class MMEvalDataset(Dataset):
                 with open(text_path, 'r', encoding = 'utf-8') as f:
                     text_data = f.read().split('\n')
 
-                for text in text_data:
-                    if text == '': continue
-                    query, answer = text.split('\t')[:2]
-                    input_data = img_human_prompt + query + imgd_assistant_prompt
+                if config.decoder_only:
+                    for text in text_data:
+                        if text == '': continue
+                        query, answer = text.split('\t')[:2]
+                        query_prompt = "[Round 0] \n\n问：{query}\n\n答："
+                        input_data = query_prompt.format(query = query)
 
-                    token_input = llm_processor.tokenizer([input_data], add_special_tokens = True, padding = 'max_length', max_length = 512, return_tensors = "pt")
-                    input_ids = token_input["input_ids"]
-                    input_attention_mask = token_input["attention_mask"]
+                        token_input = llm_processor.tokenizer([input_data], add_special_tokens = False, padding = 'max_length', max_length = 512, return_tensors = "pt")
+                        input_ids = token_input["input_ids"][0].tolist()
+                        input_attention_mask = token_input["attention_mask"][0].tolist()
 
-                    self.all_inputs.append(input_ids)
-                    self.all_images.append(image)
-                    self.all_attention_mask.append(input_attention_mask)
-                    self.all_image_id.append(image_name)
-                    self.all_ground_truth.append(answer)
-                    self.all_input_text.append(query)
-                    self.all_type.append(eval_type)
+                        self.all_inputs.append(torch.tensor(input_ids))
+                        self.all_images.append(image)
+                        self.all_attention_mask.append(torch.tensor(input_attention_mask))
+                        self.all_image_id.append(image_name)
+                        self.all_ground_truth.append(answer)
+                        self.all_input_text.append(query)
+                        self.all_type.append(eval_type)
+                else:
+                    for text in text_data:
+                        if text == '': continue
+                        query, answer = text.split('\t')[:2]
+                        query_prompt = "Human: {query} Assistant: "
+                        input_data = query_prompt.format(query = query)
+
+                        token_input = llm_processor.tokenizer([input_data], add_special_tokens = True, padding = 'max_length', max_length = 512, return_tensors = "pt")
+                        input_ids = token_input["input_ids"]
+                        input_attention_mask = token_input["attention_mask"]
+
+                        self.all_inputs.append(input_ids)
+                        self.all_images.append(image)
+                        self.all_attention_mask.append(input_attention_mask)
+                        self.all_image_id.append(image_name)
+                        self.all_ground_truth.append(answer)
+                        self.all_input_text.append(query)
+                        self.all_type.append(eval_type)
         
     def __len__(self):
         return len(self.all_inputs)
@@ -81,7 +100,7 @@ class MMECalculateMetrics():
 
     def save_data(self, output, batch):
         for index, data in enumerate(output):
-            with open(os.path.join(self.save_path, batch["type"][index] + ".txt"), "a") as f:
+            with open(os.path.join(self.save_path, batch["type"][index] + ".txt"), "a", encoding = 'utf-8') as f:
                 f.write(
                     batch["image_id"][index] + '\t' +
                     batch["input_text"][index] + '\t' +
@@ -179,7 +198,7 @@ class MMECalculateMetrics():
             for task_name in task_name_list:
 
                 task_txt = os.path.join(results_dir, task_name + ".txt")
-                lines = open(task_txt, 'r').readlines()
+                lines = open(task_txt, 'r', encoding = 'utf-8').readlines()
                 chunk_lines = list(self.divide_chunks(lines)) # one image corresponds to two questions
                 
                 img_num = len(chunk_lines)

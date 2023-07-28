@@ -3,7 +3,7 @@ import torch.utils.checkpoint
 from torch import nn
 from torch.nn import CrossEntropyLoss
 
-from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoModel
+from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoConfig, AutoModel
 from transformers import (
     Blip2Config,
     Blip2PreTrainedModel,
@@ -29,7 +29,8 @@ from transformers.utils import (
 import math
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, Union
-
+from Lmeye.lmeye_config import config
+base_config = config
 @dataclass
 class Blip2ForConditionalGenerationModelOutput(ModelOutput):
     """
@@ -66,31 +67,48 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
     config_class = Blip2Config
     main_input_name = "pixel_values"
 
-    def __init__(self, config: Blip2Config):
-        super().__init__(config)
+    def __init__(self, data_path):
+        if base_config.model_type == "GLM":
+            blip2_model_config = Blip2Config.from_pretrained("/root/data/model/blip2-GLM")
+            language_model_config = AutoConfig.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code = True)
+            blip2_model_config.text_config = language_model_config
+            print(blip2_model_config.vision_config)
+            super().__init__(blip2_model_config)
 
-        self.clip = None
-        self.vision_model = Blip2VisionModel(config.vision_config)
 
-        self.query_tokens = nn.Parameter(torch.zeros(1, config.num_query_tokens, config.qformer_config.hidden_size))
-        self.qformer = Blip2QFormerModel(config.qformer_config)
+            self.vision_model = Blip2VisionModel(blip2_model_config.vision_config)
+            self.query_tokens = nn.Parameter(torch.zeros(1, blip2_model_config.num_query_tokens, blip2_model_config.qformer_config.hidden_size))
+            self.qformer = Blip2QFormerModel(blip2_model_config.qformer_config)
 
-        self.language_projection = nn.Linear(config.qformer_config.hidden_size, config.text_config.hidden_size)
-        if config.use_decoder_only_language_model:
-            language_model = AutoModelForCausalLM.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code = True)
-        else:
+            self.language_model = AutoModel.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code = True)
+            self.language_projection = nn.Linear(blip2_model_config.qformer_config.hidden_size, language_model_config.hidden_size)  
+            self.instruction_embedding_imgd = nn.Parameter(torch.randn(1, language_model_config.hidden_size))
+            self.instruction_embedding_imgq = nn.Parameter(torch.randn(1, language_model_config.hidden_size))
+            self.instruction_blip22clip = nn.Linear(language_model_config.hidden_size, 5 * 768)
+            self.instruction_linear = nn.Linear(768, 768)
+            self.instruction_imgdLinear = nn.Linear(768, language_model_config.hidden_size)
+
+        if base_config.model_type == "FLAN-T5":
+            config = Blip2Config.from_pretrained("/root/data/model/blip2-flan-t5-xl")
+            super().__init__(config)
+            self.vision_model = Blip2VisionModel(config.vision_config)
+            self.query_tokens = nn.Parameter(torch.zeros(1, config.num_query_tokens, config.qformer_config.hidden_size))
+            self.qformer = Blip2QFormerModel(config.qformer_config)
+            #language_model = AutoModel.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code=True).cuda()
             language_model = AutoModelForSeq2SeqLM.from_config(config.text_config)
-        #language_model = AutoModel.from_pretrained("/root/data/model/ChatGLM2-6B/ChatGLM2-6B", trust_remote_code=True).cuda()
-        self.language_model = language_model
- 
-        self.instruction_embedding_imgd = nn.Parameter(torch.randn(1, config.text_config.hidden_size))
-        self.instruction_embedding_imgq = nn.Parameter(torch.randn(1, config.text_config.hidden_size))
-        self.instruction_blip22clip = nn.Linear(config.text_config.hidden_size, 5 * 768)
-        self.instruction_linear = nn.Linear(768, 768)
-        self.instruction_imgdLinear = nn.Linear(768, config.text_config.hidden_size)
+            config.text_config = config.text_config
+            self.language_model = language_model
 
-        # Initialize weights and apply final processing
-        self.post_init()
+            print(config.text_config.hidden_size)
+            self.language_projection = nn.Linear(config.qformer_config.hidden_size, config.text_config.hidden_size)  
+            self.instruction_embedding_imgd = nn.Parameter(torch.randn(1, config.text_config.hidden_size))
+            self.instruction_embedding_imgq = nn.Parameter(torch.randn(1, config.text_config.hidden_size))
+            self.instruction_blip22clip = nn.Linear(config.text_config.hidden_size, 5 * 768)
+            self.instruction_linear = nn.Linear(768, 768)
+            self.instruction_imgdLinear = nn.Linear(768, config.text_config.hidden_size)
+
+            # Initialize weights and apply final processing
+            self.post_init()
 
     def load_clip(self, clip_model):
         self.clip = clip_model
@@ -118,74 +136,10 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
             self.language_model.encoder.embed_tokens = self.language_model.shared
             self.language_model.decoder.embed_tokens = self.language_model.shared
 
-    def get_text_features(
-            self,
-            input_ids: Optional[torch.Tensor] = None,
-            attention_mask: Optional[torch.Tensor] = None,
-            decoder_input_ids: Optional[torch.Tensor] = None,
-            decoder_attention_mask: Optional[torch.Tensor] = None,
-            labels: Optional[torch.Tensor] = None,
-            output_attentions: Optional[bool] = None,
-            output_hidden_states: Optional[bool] = None,
-            return_dict: Optional[bool] = None,
-    ):
-        r"""
-        Returns:
-            text_outputs (`CausalLMOutputWithPast`, or `tuple(torch.FloatTensor)` if `return_dict=False`):
-                The language model outputs. If `return_dict=True`, the output is a [`CausalLMOutputWithPast`] that
-                contains the language model logits, the past key values and the hidden states if
-                `output_hidden_states=True`.
-        Examples:
-        ```python
-        >>> import torch
-        >>> from transformers import AutoTokenizer, Blip2Model
-
-        >>> device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        >>> model = Blip2Model.from_pretrained("Salesforce/blip2-opt-2.7b", torch_dtype=torch.float16)
-
-        >>> model.to(device)  # doctest: +IGNORE_RESULT
-
-        >>> tokenizer = AutoTokenizer.from_pretrained("Salesforce/blip2-opt-2.7b")
-        >>> inputs = tokenizer(["a photo of a cat", "a photo of a dog"], padding=True, return_tensors="pt").to(device)
-        >>> text_features = model.get_text_features(**inputs)
-        ```"""
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
-        )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
-        if self.config.use_decoder_only_language_model:
-            text_outputs = self.language_model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                output_attentions=output_attentions,
-                output_hidden_states=output_hidden_states,
-                return_dict=return_dict,
-            )
-        else:
-            inputs_embeds = self.language_model.get_input_embeddings()(input_ids)
-
-            text_outputs = self.language_model(
-                inputs_embeds=inputs_embeds,
-                attention_mask=attention_mask,
-                decoder_input_ids=decoder_input_ids,
-                decoder_attention_mask=decoder_attention_mask,
-                output_attentions=output_attentions,
-                output_hidden_states=output_hidden_states,
-                return_dict=return_dict,
-                labels=labels,
-            )
-
-        return text_outputs
-
     def forward(
             self,
             pixel_values: torch.FloatTensor,
             input_ids: torch.FloatTensor,
-            imgd_token_id: int,
-            imgq_token_id: int,
             clip_text_input: torch.Tensor,
             attention_mask: Optional[torch.LongTensor] = None,
             decoder_input_ids: Optional[torch.LongTensor] = None,
@@ -197,114 +151,136 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
     ) -> Blip2ForConditionalGenerationModelOutput:
         r"""
         Returns:
-
-        Examples:
-
-        ```python
-        >>> from PIL import Image
-        >>> import requests
-        >>> from transformers import Blip2Processor, Blip2Model
-        >>> import torch
-
-        >>> device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        >>> processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
-        >>> model = Blip2Model.from_pretrained("Salesforce/blip2-opt-2.7b", torch_dtype=torch.float16)
-        >>> model.to(device)  # doctest: +IGNORE_RESULT
-
-        >>> url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-        >>> image = Image.open(requests.get(url, stream=True).raw)
-
-        >>> prompt = "Question: how many cats are there? Answer:"
-        >>> inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-
-        >>> outputs = model(**inputs)
-        ```"""
+        """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
-        bsz = input_ids.size(0)
+        device = input_ids.device
+        batch_size = input_ids.shape[0]
 
         # step 1: forward the images through the vision encoder,
-        # to get image embeddings of shape (batch_size, seq_len, hidden_size)
+        # to get image embeddings of shape (batch_size, seq_len, hidden_size) = (batch_size * 257 * 1408)
         vision_outputs = self.vision_model(
-            pixel_values=pixel_values,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
+            pixel_values = pixel_values,
+            output_attentions = output_attentions,
+            output_hidden_states = output_hidden_states,
+            return_dict = return_dict,
         )
-        # 图像特征，维度为bz * 257 * 1408
         image_embeds = vision_outputs[0]
 
         # step 2: forward the query tokens through the QFormer, using the image embeddings for cross-attention
-        image_attention_mask = torch.ones(image_embeds.size()[:-1], dtype=torch.long, device=image_embeds.device)
+        image_attention_mask = torch.ones(image_embeds.size()[:-1], dtype = torch.long, device = device)
 
         query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
         query_outputs = self.qformer(
-            query_embeds=query_tokens,
-            encoder_hidden_states=image_embeds,
-            encoder_attention_mask=image_attention_mask,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
+            query_embeds = query_tokens,
+            encoder_hidden_states = image_embeds,
+            encoder_attention_mask = image_attention_mask,
+            output_attentions = output_attentions,
+            output_hidden_states = output_hidden_states,
+            return_dict = return_dict,
         )
         query_output = query_outputs[0]
 
         # step 3: use the language model, conditioned on the query outputs and the prompt
         language_model_inputs = self.language_projection(query_output)
         language_model_attention_mask = torch.ones(
-            language_model_inputs.size()[:-1], dtype=torch.long, device=language_model_inputs.device
+            language_model_inputs.size()[:-1], dtype = torch.long, device = device
         )
         inputs_embeds = self.language_model.get_input_embeddings()(input_ids)
-        # inputs_embeds[input_ids == imgd_token_pos] += self.instruction_embedding_imgd
 
-        inputs_embeds = torch.cat([language_model_inputs, inputs_embeds], dim=1)
+        # step 4: cat [image_qformer_query, 1*img-q + 5*img-d, text_query]
+        qformer_length = language_model_inputs.shape[1]                                     # The qformer output length
+        imgq_token_number = 1                                                               # The number of imgq
+        imgd_token_number = 5                                                               # The number of imgd
+        all_image_query_length = qformer_length + imgq_token_number + imgd_token_number     # Total length of image tokens before text tokens
 
+        inputs_embeds = torch.cat([
+            language_model_inputs,
+            torch.zeros((batch_size, imgq_token_number + imgd_token_number, inputs_embeds.shape[2]), device = device),
+            inputs_embeds,
+        ], dim = 1)
 
-        tmp_ids = torch.zeros((bsz, 32)).to('cuda:0')
-        tmp_pos_ids = torch.concat([tmp_ids, input_ids], dim=1)
+        inputs_embeds[:, qformer_length] += self.instruction_embedding_imgq
+        inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += self.instruction_embedding_imgd
 
-        inputs_embeds[tmp_pos_ids == imgd_token_id] += self.instruction_embedding_imgd
-        inputs_embeds[tmp_pos_ids == imgq_token_id] += self.instruction_embedding_imgq
+        language_model_attention_mask = torch.cat([
+            language_model_attention_mask,
+            torch.ones((batch_size, imgq_token_number + imgd_token_number), device = device),
+        ], dim = 1)
 
+        tmp_pos_ids = torch.concat([
+            torch.zeros((batch_size, all_image_query_length), device = device),
+            input_ids
+        ], dim = 1)
 
         if attention_mask is None:
-            attention_mask = torch.ones_like(input_ids)
-        expected_device = language_model_attention_mask.device
-        attention_mask = torch.cat([language_model_attention_mask, attention_mask.to(expected_device)], dim=1)
+            attention_mask = torch.ones_like(tmp_pos_ids)
+        attention_mask = torch.cat([language_model_attention_mask, attention_mask.to(device)], dim=1)
 
-        if self.config.use_decoder_only_language_model:
-            outputs = self.language_model(
-                inputs_embeds=inputs_embeds,
-                attention_mask=attention_mask,
-                output_attentions=output_attentions,
-                output_hidden_states=output_hidden_states,
-                return_dict=return_dict,
-            )
-            logits = outputs.logits if return_dict else outputs[0]
-            loss = None
-            # we compute the loss here since we need to take into account the sequence length of the query embeds
-            if labels is not None:
-                logits = logits[:, -labels.size(1):, :]
-                # Shift so that tokens < n predict n
-                shift_logits = logits[..., :-1, :].contiguous()
-                shift_labels = labels[..., 1:].contiguous().to(logits.device)
+        if config.decoder_only:
+            # step 5: first stage to get imgq embedding
+            labels = labels.squeeze()
+            labels = torch.concat([torch.full((batch_size, all_image_query_length), -100).to(device), labels], dim = 1)
 
-                # Flatten the tokens
-                loss_fct = CrossEntropyLoss(reduction="mean")
+            encoder_hidden_state = self.language_model.transformer(
+                input_ids = None,
+                inputs_embeds = inputs_embeds.half(),
+            )[0].transpose(0, 1)
 
-                loss = loss_fct(shift_logits.view(-1, self.config.text_config.vocab_size), shift_labels.view(-1))
-        else:
-            encoder_hidden_state = self.language_model.encoder(
-                            inputs_embeds=inputs_embeds,
-                            attention_mask=attention_mask)[0]
+            pre_query = encoder_hidden_state[:, qformer_length].view(batch_size, -1)
+            pre_query = self.instruction_blip22clip(pre_query.to(torch.float32)).view(batch_size, imgd_token_number, -1)
 
-            pre_query = encoder_hidden_state[tmp_pos_ids == imgq_token_id].view(bsz, -1)
-
-            pre_query = self.instruction_blip22clip(pre_query).view(bsz, 5, -1)
-
+            # step 6: get imgd embedding
             clip_frozon_embed = self.clip.text_model.embeddings
             clip_base_embeds = clip_frozon_embed(clip_text_input)
 
+            query_output = self.instruction_linear(query_output)
+
+            clip_hidden_states = torch.concat([
+                clip_base_embeds[:, 0, :].unsqueeze(dim = 1),
+                query_output, pre_query,
+                clip_base_embeds[:, -1, :].unsqueeze(dim = 1)
+            ], dim = 1)
+
+            clip_pooled_output = self.clip.text_model(input_ids = clip_text_input, hidden_states = clip_hidden_states)[0]
+            clip_pooled_output = clip_pooled_output[:, -imgd_token_number:, :]
+            clip_text_feature = self.clip.text_projection(clip_pooled_output)
+            imgd_prompt = self.instruction_imgdLinear(clip_text_feature)
+
+            inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += imgd_prompt
+
+            # step 7: second stage to get answer
+            outputs = self.language_model(
+                input_ids = None,
+                inputs_embeds = inputs_embeds.half(),
+                attention_mask = attention_mask,
+                return_dict = return_dict,
+                labels = labels,
+            )
+            loss = outputs.loss if return_dict else outputs[0]
+            logits = outputs.logits if return_dict else outputs[1]
+
+            if not return_dict:
+                output = (logits, vision_outputs, query_outputs, outputs)
+                return ((loss,) + output) if loss is not None else output
+
+            return Blip2ForConditionalGenerationModelOutput(
+                loss = loss,
+                logits = logits,
+                vision_outputs = vision_outputs,
+                qformer_outputs = query_outputs,
+                language_model_outputs = outputs,
+            )
+        else:
+            encoder_hidden_state = self.language_model.encoder(
+                inputs_embeds = inputs_embeds,
+                attention_mask = attention_mask
+            )[0]
+            
+            pre_query = encoder_hidden_state[:, qformer_length].view(batch_size, -1)
+            pre_query = self.instruction_blip22clip(pre_query.to(torch.float32)).view(batch_size, 5, -1)
+
+            clip_frozon_embed = self.clip.text_model.embeddings
+            clip_base_embeds = clip_frozon_embed(clip_text_input)
 
             query_output = self.instruction_linear(query_output)
 
@@ -313,24 +289,20 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
                  clip_base_embeds[:, -1, :].unsqueeze(dim=1)], dim=1)
 
             clip_pooled_output = self.clip.text_model(input_ids = clip_text_input, hidden_states = clip_hidden_states)[0]
-
             clip_pooled_output = clip_pooled_output[:, -5:, :]
-
             clip_text_feature = self.clip.text_projection(clip_pooled_output)
-
-            imgd_prompt = self.instruction_imgdLinear(clip_text_feature).view(-1, self.config.text_config.hidden_size)
-
-            inputs_embeds[tmp_pos_ids == imgd_token_id] += imgd_prompt
+            imgd_prompt = self.instruction_imgdLinear(clip_text_feature)
+            inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += imgd_prompt
 
             outputs = self.language_model(
-                inputs_embeds=inputs_embeds,
-                attention_mask=attention_mask,
-                decoder_input_ids=decoder_input_ids,
-                decoder_attention_mask=decoder_attention_mask,
-                output_attentions=output_attentions,
-                output_hidden_states=output_hidden_states,
-                return_dict=return_dict,
-                labels=labels.squeeze(),
+                inputs_embeds = inputs_embeds,
+                attention_mask = attention_mask,
+                decoder_input_ids = decoder_input_ids,
+                decoder_attention_mask = decoder_attention_mask,
+                output_attentions = output_attentions,
+                output_hidden_states = output_hidden_states,
+                return_dict = return_dict,
+                labels = labels,
             )
             loss = outputs.loss if return_dict else outputs[0]
             logits = outputs.logits if return_dict else outputs[1]
@@ -348,83 +320,136 @@ class Blip2InstructionQueryModel(Blip2PreTrainedModel):
         )
 
     def generate(
-            self,
-            pixel_values: torch.FloatTensor,
-            imgd_token_id: int,
-            imgq_token_id: int,
-            clip_text_input: torch.Tensor,
-            input_ids: Optional[torch.LongTensor],
-            attention_mask: Optional[torch.LongTensor] = None,
-            **generate_kwargs,
+        self,
+        pixel_values: torch.FloatTensor,
+        clip_text_input: torch.Tensor,
+        input_ids: Optional[torch.LongTensor],
+        attention_mask: Optional[torch.LongTensor] = None,
+        **generate_kwargs,
     ) -> torch.LongTensor:
-        bsz = input_ids.size(0)
+        device = input_ids.device
+        batch_size = input_ids.shape[0]
 
         # step 1: forward the images through the vision encoder,
-        # to get image embeddings of shape (batch_size, seq_len, hidden_size)
-        image_embeds = self.vision_model(pixel_values, return_dict=True).last_hidden_state
+        # to get image embeddings of shape (batch_size, seq_len, hidden_size) = (batch_size * 257 * 1408)
+        image_embeds = self.vision_model(pixel_values, return_dict = True).last_hidden_state
 
         # step 2: forward the query tokens through the QFormer, using the image embeddings for cross-attention
-        image_attention_mask = torch.ones(image_embeds.size()[:-1], dtype=torch.long, device=image_embeds.device)
+        image_attention_mask = torch.ones(image_embeds.size()[:-1], dtype = torch.long, device = device)
 
         query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
         query_outputs = self.qformer(
-            query_embeds=query_tokens,
-            encoder_hidden_states=image_embeds,
-            encoder_attention_mask=image_attention_mask
+            query_embeds = query_tokens,
+            encoder_hidden_states = image_embeds,
+            encoder_attention_mask = image_attention_mask
         )
         query_output = query_outputs.last_hidden_state
 
         # step 3: use the language model, conditioned on the query outputs and the prompt
         language_model_inputs = self.language_projection(query_output)
         language_model_attention_mask = torch.ones(
-            language_model_inputs.size()[:-1], dtype=torch.long, device=language_model_inputs.device
+            language_model_inputs.size()[:-1], dtype = torch.long, device = device
         )
         inputs_embeds = self.language_model.get_input_embeddings()(input_ids)
 
-        inputs_embeds = torch.cat([language_model_inputs, inputs_embeds], dim=1)
+        # step 4: cat [image_qformer_query, 1*img-q + 5*img-d, text_query]
+        qformer_length = language_model_inputs.shape[1]                                     # The qformer output length
+        imgq_token_number = 1                                                               # The number of imgq
+        imgd_token_number = 5                                                               # The number of imgd
+        all_image_query_length = qformer_length + imgq_token_number + imgd_token_number     # Total length of image tokens before text tokens
 
-        tmp_ids = torch.zeros((bsz, 32)).to(inputs_embeds.device)
-        tmp_pos_ids = torch.concat([tmp_ids, input_ids], dim=1)
-        inputs_embeds[tmp_pos_ids == imgd_token_id] += self.instruction_embedding_imgd
-        inputs_embeds[tmp_pos_ids == imgq_token_id] += self.instruction_embedding_imgq
+        inputs_embeds = torch.cat([
+            language_model_inputs,
+            torch.zeros((batch_size, imgq_token_number + imgd_token_number, inputs_embeds.shape[2]), device = device),
+            inputs_embeds,
+        ], dim = 1)
+
+        inputs_embeds[:, qformer_length] += self.instruction_embedding_imgq
+        inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += self.instruction_embedding_imgd
+
+        language_model_attention_mask = torch.cat([
+            language_model_attention_mask,
+            torch.ones((batch_size, imgq_token_number + imgd_token_number), device = device),
+        ], dim = 1)
+
+        tmp_pos_ids = torch.concat([
+            torch.zeros((batch_size, all_image_query_length), device = device),
+            input_ids
+        ], dim = 1)
 
         if attention_mask is None:
-            attention_mask = torch.ones_like(input_ids)
-        expected_device = language_model_attention_mask.device
-        attention_mask = torch.cat([language_model_attention_mask, attention_mask.to(expected_device)], dim=1)
+            attention_mask = torch.ones_like(tmp_pos_ids)
+        attention_mask = torch.cat([language_model_attention_mask, attention_mask.to(device)], dim=1)
 
-        # 接下来我们需要从encoder中获取结果
-        encoder_hidden_state = self.language_model.encoder(
-            inputs_embeds=inputs_embeds,
-            attention_mask=attention_mask)[0]
+        if config.decoder_only:
+            # step 5: first stage to get imgq embedding
+            encoder_hidden_state = self.language_model.transformer(
+                input_ids = None,
+                inputs_embeds = inputs_embeds.half(),
+                attention_mask = attention_mask,
+            )[0].transpose(0, 1)
 
-        pre_query = encoder_hidden_state[tmp_pos_ids == imgq_token_id].view(bsz, -1)
+            pre_query = encoder_hidden_state[:, qformer_length].view(batch_size, -1)
+            pre_query = self.instruction_blip22clip(pre_query.to(torch.float32)).view(batch_size, imgd_token_number, -1)
 
-        pre_query = self.instruction_blip22clip(pre_query).view(bsz, 5, -1)
+            # step 6: get imgd embedding
+            clip_frozon_embed = self.clip.text_model.embeddings
+            clip_base_embeds = clip_frozon_embed(clip_text_input)
 
-        clip_frozon_embed = self.clip.text_model.embeddings
-        clip_base_embeds = clip_frozon_embed(clip_text_input)
+            query_output = self.instruction_linear(query_output)
 
-        # 将qformer输出的维度进行转化
-        query_output = self.instruction_linear(query_output)
+            clip_hidden_states = torch.concat([
+                clip_base_embeds[:, 0, :].unsqueeze(dim = 1),
+                query_output, pre_query,
+                clip_base_embeds[:, -1, :].unsqueeze(dim = 1)
+            ], dim = 1)
 
-        clip_hidden_states = torch.concat(
-            [clip_base_embeds[:, 0, :].unsqueeze(dim=1), query_output, pre_query,
-             clip_base_embeds[:, -1, :].unsqueeze(dim=1)], dim=1)
+            clip_pooled_output = self.clip.text_model(input_ids = clip_text_input, hidden_states = clip_hidden_states)[0]
+            clip_pooled_output = clip_pooled_output[:, -imgd_token_number:, :]
+            clip_text_feature = self.clip.text_projection(clip_pooled_output)
+            imgd_prompt = self.instruction_imgdLinear(clip_text_feature)
 
-        clip_pooled_output = self.clip.text_model(input_ids=clip_text_input, hidden_states=clip_hidden_states)[0]
+            inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += imgd_prompt
 
-        clip_pooled_output = clip_pooled_output[:, -5:, :]
+            outputs = self.language_model.generate(
+                inputs_embeds = inputs_embeds.half(),
+                attention_mask = attention_mask,
+                bos_token_id = 0,
+                **generate_kwargs,
+            )
+            return outputs
+        else:
+            # step 5: first stage to get imgq embedding
+            encoder_hidden_state = self.language_model.encoder(
+                inputs_embeds = inputs_embeds,
+                attention_mask = attention_mask,
+            )[0]
 
-        clip_text_feature = self.clip.text_projection(clip_pooled_output)
-        
-        imgd_prompt = self.instruction_imgdLinear(clip_text_feature).view(-1, self.config.text_config.hidden_size)
+            pre_query = encoder_hidden_state[:, qformer_length].view(batch_size, -1)
+            pre_query = self.instruction_blip22clip(pre_query.to(torch.float32)).view(batch_size, imgd_token_number, -1)
 
-        inputs_embeds[tmp_pos_ids == imgd_token_id] += imgd_prompt
+            # step 6: get imgd embedding
+            clip_frozon_embed = self.clip.text_model.embeddings
+            clip_base_embeds = clip_frozon_embed(clip_text_input)
 
-        outputs = self.language_model.generate(
-            inputs_embeds=inputs_embeds,
-            attention_mask=attention_mask,
-            **generate_kwargs,
-        )
-        return outputs
+            query_output = self.instruction_linear(query_output)
+
+            clip_hidden_states = torch.concat([
+                clip_base_embeds[:, 0, :].unsqueeze(dim = 1),
+                query_output, pre_query,
+                clip_base_embeds[:, -1, :].unsqueeze(dim = 1)
+            ], dim = 1)
+
+            clip_pooled_output = self.clip.text_model(input_ids = clip_text_input, hidden_states = clip_hidden_states)[0]
+            clip_pooled_output = clip_pooled_output[:, -imgd_token_number:, :]
+            clip_text_feature = self.clip.text_projection(clip_pooled_output)
+            imgd_prompt = self.instruction_imgdLinear(clip_text_feature)
+
+            inputs_embeds[:, qformer_length + imgq_token_number: all_image_query_length] += imgd_prompt
+
+            outputs = self.language_model.generate(
+                inputs_embeds = inputs_embeds,
+                attention_mask = attention_mask,
+                **generate_kwargs,
+            )
+            return outputs

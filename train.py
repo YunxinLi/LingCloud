@@ -25,7 +25,7 @@ from Lmeye.lmeye_config import *
 
 from utils.mme_eval import *
 from utils.mmbench_eval import *
-import torch.nn.functional as F
+from utils.glm_dataloader import *
 
 def train(
         train_dataloader: DataLoader,
@@ -53,6 +53,33 @@ def train(
     model.train()
         #shfks
     for epoch in range(config.num_train_epochs):
+        if "MME" in eval_dataloader_dict and eval_dataloader_dict["MME"] is not None:
+            mme_metrics = MMECalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MME")
+            mme_metrics.del_data()
+            model.eval()
+            with torch.no_grad():
+                for step, batch in enumerate(eval_dataloader_dict["MME"]):
+                    text = ["! " * 37] * batch["inputs"].size(0)
+                    clip_text = clip_tokenizer(text, return_tensors = "pt")
+                    clip_text_ids = clip_text["input_ids"].cuda()
+                    
+                    generate_ids = model.generate(
+                        input_ids = batch["inputs"].squeeze().cuda(),
+                        pixel_values =  batch["image"].cuda(),
+                        attention_mask = batch["attention_mask"].squeeze().cuda(),
+                        num_beams = 5,
+                        temperature = 0.2,
+                        top_p = 1,
+                        top_k = 3,
+                        clip_text_input = clip_text_ids,
+                        max_new_tokens = 16,
+                    )
+
+                    output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
+                    mme_metrics.save_data(output, batch)
+            torch.cuda.empty_cache()
+            mme_metrics.process_result()
+
         model.train()
         for step, batch in enumerate(train_dataloader):
             text = ["! " * 37] * batch["inputs"].size(0)
@@ -63,15 +90,13 @@ def train(
                 labels = batch['target'].squeeze().cuda(),
                 input_ids = batch["inputs"].squeeze().cuda(),
                 pixel_values =  batch["image"].cuda(),
-                imgd_token_id = 32100,
-                imgq_token_id = 32101,
                 clip_text_input = clip_text_ids,
                 attention_mask = batch["attention_mask"].squeeze().cuda(),
             )
             loss: torch.FloatTensor = model_output.loss
             '''
             with torch.no_grad():
-                text = ["! " * 39] * batch["inputs"].size(0)
+                text = ["! " * 37] * batch["inputs"].size(0)
                 clip_text = clip_tokenizer(text, return_tensors = "pt")
                 clip_text_ids = clip_text["input_ids"].cuda()
                 
@@ -79,8 +104,6 @@ def train(
                     input_ids = batch["inputs"].squeeze().cuda(),
                     pixel_values =  batch["image"].cuda(),
                     attention_mask = batch["attention_mask"].squeeze().cuda(),
-                    imgd_token_id = 32100,
-                    imgq_token_id = 32101,
                     num_beams = 5,
                     temperature = 0.2,
                     top_p = 1,
@@ -90,9 +113,9 @@ def train(
                 )
 
                 output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
-                #print(batch["input_text"])
-                #print(batch["ground_truth"])
-                #print(output)
+                print(batch["input_text"])
+                print(batch["ground_truth"])
+                print(output)
                 #print(loss)
             '''
             if config.gradient_accumulation_steps > 1:
@@ -112,7 +135,7 @@ def train(
                 scheduler.step()
                 model.zero_grad()
 
-                if global_step % config.valid_steps == 0:
+                if global_step % config.logging_steps == 0:
                     print("when epoch {} and total step {},  the total loss is {}".format(epoch, global_step, global_loss / global_step))
 
                 save_name_list = [
@@ -137,36 +160,6 @@ def train(
                         _use_new_zipfile_serialization = False
                     )
 
-        if "MME" in eval_dataloader_dict and eval_dataloader_dict["MME"] is not None:
-            mme_metrics = MMECalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MME")
-            mme_metrics.del_data()
-            model.eval()
-
-            for step, batch in enumerate(eval_dataloader_dict["MME"]):
-                with torch.no_grad():
-                    text = ["! " * 37] * batch["inputs"].size(0)
-                    clip_text = clip_tokenizer(text, return_tensors = "pt")
-                    clip_text_ids = clip_text["input_ids"].cuda()
-                    
-                    generate_ids = model.generate(
-                        input_ids = batch["inputs"].squeeze().cuda(),
-                        pixel_values =  batch["image"].cuda(),
-                        attention_mask = batch["attention_mask"].squeeze().cuda(),
-                        imgd_token_id = 32100,
-                        imgq_token_id = 32101,
-                        num_beams = 5,
-                        temperature = 0.2,
-                        top_p = 1,
-                        top_k = 3,
-                        clip_text_input = clip_text_ids,
-                        max_new_tokens = 16,
-                    )
-
-                    output = lmeye_processor.batch_decode(generate_ids, skip_special_tokens = True, clean_up_tokenization_spaces = False)
-                    mme_metrics.save_data(output, batch)
-            torch.cuda.empty_cache()
-            mme_metrics.process_result()
-
         if "MMBench" in eval_dataloader_dict and eval_dataloader_dict["MMBench"] is not None:
             mmbench_metrics = MMBenchCalculateMetrics(save_path = "/home/Lmeye/output/eval_data/MMBench")
             mmbench_metrics.del_data()
@@ -182,8 +175,6 @@ def train(
                         input_ids = batch["inputs"].squeeze().cuda(),
                         pixel_values =  batch["image"].cuda(),
                         attention_mask = batch["attention_mask"].squeeze().cuda(),
-                        imgd_token_id = 32100,
-                        imgq_token_id = 32101,
                         num_beams = 5,
                         temperature = 0.2,
                         top_p = 1,
@@ -202,14 +193,18 @@ def main():
     np.random.seed(seed)
     torch.manual_seed(seed) 
     torch.cuda.manual_seed(seed)
- 
+
+    if config.model_type not in ["FLAN-T5", "GLM"]:
+        raise "model type not in ['FLAN-T5', 'GLM']"
+
     # 加载 Lmeye 框架，载入 LLM 模型
-    llm_model = Blip2InstructionQueryModel.from_pretrained(config.llm_path)
-    llm_processor = Blip2Processor.from_pretrained(config.llm_path)
+    llm_processor = Blip2Processor.from_pretrained("/root/data/model/blip2-flan-t5-xl", trust_remote_code = True)#, padding_side = 'left')
+    llm_model = Blip2InstructionQueryModel(config.llm_path)
 
     # 加载数据集
-    train_dataset = TrainDataset(config.dataset, llm_processor)
-    train_sampler = RandomSampler(train_dataset, num_samples = 10000)
+    train_dataset = TrainDataset(config, llm_processor)
+    train_sampler = RandomSampler(train_dataset, num_samples = config.num_samples)
+    # data_collator = DataCollatorForChatGLM(tokenizer = llm_processor.tokenizer, model = llm_model.language_model, ignore_pad_token_for_loss = True)
     train_loader = DataLoader(train_dataset, batch_size = config.batch_size, sampler = train_sampler)
     
     # MME 测试集
@@ -233,7 +228,7 @@ def main():
 
     # 冻结层
     llm_model.query_tokens.requires_grad = False
-    # for name, parameter in llm_model.language_projection.named_parameters():
+    #for name, parameter in llm_model.language_projection.named_parameters():
     #    parameter.requires_grad = False
 
     for name, parameter in llm_model.language_model.named_parameters():
@@ -248,8 +243,9 @@ def main():
     for name, parameter in llm_model.vision_model.named_parameters():
         parameter.requires_grad = False
  
-    params = torch.load(config.checkpoint, map_location = 'cuda:0')['net']
-    llm_model.load_state_dict(params, strict = False)
+    if config.checkpoint is not None:
+        params = torch.load(config.checkpoint, map_location = 'cuda:0')['net']
+        llm_model.load_state_dict(params, strict = False)
 
     for name, para in llm_model.named_parameters():
         if para.requires_grad is True:

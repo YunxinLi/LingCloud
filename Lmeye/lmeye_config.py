@@ -9,35 +9,37 @@ class Config(BaseModel):
     """
     
     seed: int                           = 3407
-    '''Random seed'''
-    debug: bool                         = False
-    '''If debug = True, use a small dataset to test program'''
+    ''' Random seed '''
+    debug: bool                         = True
+    ''' If debug = True, use a small dataset to test program '''
     output_dir: str                     = './output'
-    '''The path to save models'''
-    llm_path: str                       = "/root/data/model/blip2-flan-t5-xl"
-    '''The llm path need to load'''
-    checkpoint: str                     = "/root/data/model/LMEye/checkpoint_with_epoch1.pth"
-    '''The checkpoint path need to load'''
+    ''' The path to save models '''
+    llm_path: str                       = "/root/data/model/blip2-GLM"
+    ''' The llm path need to load '''
+    checkpoint: Optional[str]           = None # "/root/data/model/LMEye/checkpoint_with_epoch1.pth"
+    ''' The checkpoint path need to load '''
     dataset: str                        = "/root/dataset/LLaVA-CC3M-Pretrain-595K/chat.json"
-    '''The train dataset path need to load'''
-    mme_dataset: Optional[str]          = None # "./dataset/MME"
-    '''MME eval dataset'''
+    ''' The train dataset path need to load '''
+    mme_dataset: Optional[str]          = "./dataset/MME"
+    ''' MME eval dataset '''
     mmbench_dataset: Optional[str]      = None # "./dataset/MMBench/mmbench_dev_20230712.tsv"
-    '''MMBench eval dataset'''
+    ''' MMBench eval dataset '''
+    model_type: str                     = "FLAN-T5"
+    ''' Base model type ["FLAN-T5", "GLM"] '''
     decoder_only: bool                  = False
-    '''LLM type: encoder-decoder or deco+der-only'''
+    ''' LLM type: encoder-decoder or decoder-only '''
 
     num_samples: int                    = 10000
     '''The number of data sampled from the training set in one training epoch'''
     num_train_epochs: int               = 20
     '''The number of train epochs'''
-    batch_size: int                     = 2
+    batch_size: int                     = 8
     '''Train/eval batch size'''
-    gradient_accumulation_steps: int    = 8
+    gradient_accumulation_steps: int    = 4
     '''Train gradient accumulation steps'''
-    valid_steps: int                    = 30
-    '''Valid steps'''
-    save_steps: int                     = 100
+    logging_steps: int                  = 30
+    '''Logging steps'''
+    save_steps: int                     = 1000
     '''Save steps'''
 
     learning_rate: float                = 1e-4

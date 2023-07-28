@@ -3,6 +3,10 @@ from typing import List, Optional, Union
 from transformers.processing_utils import ProcessorMixin
 from transformers.tokenization_utils_base import BatchEncoding, PaddingStrategy, PreTokenizedInput, TextInput, TruncationStrategy
 from transformers.utils import TensorType
+from transformers import AutoTokenizer
+
+
+from Lmeye.lmeye_config import *
 
 class Blip2Processor(ProcessorMixin):
     attributes = ["image_processor", "tokenizer"]
@@ -11,9 +15,13 @@ class Blip2Processor(ProcessorMixin):
 
     # Copied from transformers.models.blip.processing_blip.BlipProcessor.__init__
     def __init__(self, image_processor, tokenizer):
+        if config.decoder_only:
+            tokenizer = AutoTokenizer.from_pretrained(
+                "/root/data/model/ChatGLM2-6B/ChatGLM2-6B",
+                padding_side = "left",
+                trust_remote_code = True,
+            )
         tokenizer.return_token_type_ids = False
-        tokenizer.add_tokens("<img-d>")
-        tokenizer.add_tokens("<img-q>")
         super().__init__(image_processor, tokenizer)
         self.current_processor = self.image_processor
 
