@@ -13,16 +13,19 @@ eval_type_dict = {
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from PIL import Image
+import torch
 import os
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
+from Lmeye.lmeye_config import *
 
 class MMEvalDataset(Dataset):
-    def __init__(self, input_path, llm_processor):
+    def __init__(self, base_config: Config, llm_processor):
         self.eval_type_list = eval_type_dict["Perception"] + eval_type_dict["Cognition"]
         self.llm_processor = llm_processor
-        
-        self.all_inputs= []
+        self.config = base_config
+
+        self.all_inputs = []
         self.all_target = []
         self.all_images = []
         self.all_attention_mask = []
@@ -31,11 +34,12 @@ class MMEvalDataset(Dataset):
         self.all_input_text = []
         self.all_type = []
 
-        img_human_prompt = "Human: <img>\n"
-        imgd_assistant_prompt = "\n <img-q> <img-d> <img-d> <img-d> <img-d> <img-d>\nAssistant:"
+        qformer_length = 32
+        imgq_token_number = base_config.imgq_number                                         # The number of imgq
+        imgd_token_number = base_config.imgd_number                                         # The number of imgd
 
         for eval_type in self.eval_type_list:
-            full_path = os.path.join(input_path, eval_type, "images")
+            full_path = os.path.join(base_config.mme_dataset, eval_type, "images")
             for image_name in os.listdir(full_path):
                 image_path = os.path.join(full_path, image_name)
                 image = Image.open(image_path)
@@ -44,22 +48,84 @@ class MMEvalDataset(Dataset):
                 with open(text_path, 'r', encoding = 'utf-8') as f:
                     text_data = f.read().split('\n')
 
-                for text in text_data:
-                    if text == '': continue
-                    query, answer = text.split('\t')[:2]
-                    input_data = img_human_prompt + query + imgd_assistant_prompt
+                if base_config.decoder_only:
+                    for text in text_data:
+                        if text == '': continue
+                        query, answer = text.split('\t')[:2]
+                        query_prompt = "[Round 0] \n\n问：{query}\n\n答："
+                        input_data = query_prompt.format(query = query)
 
-                    token_input = llm_processor.tokenizer([input_data], add_special_tokens = True, padding = 'max_length', max_length = 512, return_tensors = "pt")
-                    input_ids = token_input["input_ids"]
-                    input_attention_mask = token_input["attention_mask"]
+                        token_input = self.llm_processor.tokenizer(input_data, add_special_tokens = True, return_tensors = "pt")
+                        input_ids = token_input["input_ids"]
+                        input_attention_mask = token_input["attention_mask"]
 
-                    self.all_inputs.append(input_ids)
-                    self.all_images.append(image)
-                    self.all_attention_mask.append(input_attention_mask)
-                    self.all_image_id.append(image_name)
-                    self.all_ground_truth.append(answer)
-                    self.all_input_text.append(query)
-                    self.all_type.append(eval_type)
+                        all_input_ids = torch.cat([
+                            input_ids,
+                            torch.full((1, qformer_length), IMG_INDEX),
+                            torch.full((1, imgq_token_number), IMG_Q_INDEX),
+                            torch.full((1, imgd_token_number), IMG_D_INDEX),
+                        ], dim = 1)[0].tolist()
+
+                        input_attention_mask = torch.cat([
+                            input_attention_mask,
+                            torch.full((1, qformer_length + imgq_token_number + imgd_token_number), 1),
+                        ], dim = 1)[0].tolist()
+
+                        # padding_side left
+                        padding_length = self.config.padding - len(all_input_ids)
+                        new_all_input_ids = [0] * padding_length + all_input_ids
+                        input_attention_mask = [0] * padding_length + input_attention_mask
+
+
+                        self.all_inputs.append(torch.tensor(new_all_input_ids))
+                        self.all_images.append(image)
+                        self.all_attention_mask.append(torch.tensor(input_attention_mask))
+                        self.all_image_id.append(image_name)
+                        self.all_ground_truth.append(answer)
+                        self.all_input_text.append(query)
+                        self.all_type.append(eval_type)
+                else:
+                    for text in text_data:
+                        if text == '': continue
+                        query, answer = text.split('\t')[:2]
+                        query_prompt = "Human: {query} Assistant: "
+                        input_data = query_prompt.format(query = query)
+
+                        token_input = llm_processor.tokenizer([input_data], add_special_tokens = True, return_tensors = "pt")
+                        input_ids = token_input["input_ids"]
+                        input_attention_mask = token_input["attention_mask"]
+
+                        all_input_ids = torch.cat([
+                            input_ids[:, :-1],
+                            torch.full((1, qformer_length), IMG_INDEX),
+                            torch.full((1, imgq_token_number), IMG_Q_INDEX),
+                            torch.full((1, imgd_token_number), IMG_D_INDEX),
+                            input_ids[:, -1].unsqueeze(-1),
+                        ], dim = 1)
+
+                        input_attention_mask = torch.cat([
+                            input_attention_mask,
+                            torch.full((1, qformer_length + imgq_token_number + imgd_token_number), 1),
+                        ], dim = 1)
+
+                        # padding_side right
+                        all_input_ids = torch.cat([
+                            all_input_ids,
+                            torch.full((1, self.config.padding - all_input_ids.shape[-1]), 0),
+                        ], dim = 1)
+
+                        input_attention_mask = torch.cat([
+                            input_attention_mask,
+                            torch.full((1, self.config.padding - input_attention_mask.shape[-1]), 0),
+                        ], dim = 1)
+
+                        self.all_inputs.append(all_input_ids)
+                        self.all_images.append(image)
+                        self.all_attention_mask.append(input_attention_mask)
+                        self.all_image_id.append(image_name)
+                        self.all_ground_truth.append(answer)
+                        self.all_input_text.append(query)
+                        self.all_type.append(eval_type)
         
     def __len__(self):
         return len(self.all_inputs)
@@ -81,12 +147,12 @@ class MMECalculateMetrics():
 
     def save_data(self, output, batch):
         for index, data in enumerate(output):
-            with open(os.path.join(self.save_path, batch["type"][index] + ".txt"), "a") as f:
+            with open(os.path.join(self.save_path, batch["type"][index] + ".txt"), "a", encoding = 'utf-8') as f:
                 f.write(
                     batch["image_id"][index] + '\t' +
-                    batch["input_text"][index] + '\t' +
-                    batch["ground_truth"][index] + '\t' +
-                    output[index] + '\n'
+                    batch["input_text"][index].replace('\n', '') + '\t' +
+                    batch["ground_truth"][index].replace('\n', '') + '\t' +
+                    output[index].replace('\n', '') + '\n'
                 )
 
     def del_data(self):
@@ -179,7 +245,7 @@ class MMECalculateMetrics():
             for task_name in task_name_list:
 
                 task_txt = os.path.join(results_dir, task_name + ".txt")
-                lines = open(task_txt, 'r').readlines()
+                lines = open(task_txt, 'r', encoding = 'utf-8').readlines()
                 chunk_lines = list(self.divide_chunks(lines)) # one image corresponds to two questions
                 
                 img_num = len(chunk_lines)
