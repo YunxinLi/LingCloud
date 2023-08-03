@@ -2,6 +2,9 @@ output/
 utils/__pycache__/
 Lmeye/__pycache__/
 Lmeye/clip/__pycache__/
+Lmeye/blip2/__pycache__/
 image2clip.ipynb
 nohup.out
 dataset/
+.history/
+.vscode/

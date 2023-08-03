@@ -15,12 +15,6 @@ class Blip2Processor(ProcessorMixin):
 
     # Copied from transformers.models.blip.processing_blip.BlipProcessor.__init__
     def __init__(self, image_processor, tokenizer):
-        if config.decoder_only:
-            tokenizer = AutoTokenizer.from_pretrained(
-                "/root/data/model/ChatGLM2-6B/ChatGLM2-6B",
-                padding_side = "left",
-                trust_remote_code = True,
-            )
         tokenizer.return_token_type_ids = False
         super().__init__(image_processor, tokenizer)
         self.current_processor = self.image_processor

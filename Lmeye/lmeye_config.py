@@ -3,41 +3,61 @@ from argparse import Namespace
 from pydantic import BaseModel
 from typing import Dict, List, Tuple, Optional
 
+model_type_dict = {
+    "FLAN-T5": "encoder-decoder",
+    "GLMv2": "decoder-only",
+}
+
+IGNORE_INDEX = -100
+IMG_INDEX = -101
+IMG_Q_INDEX = -102
+IMG_D_INDEX = -103
+
 class Config(BaseModel):
     """
     Class defining the train/eval config data in Lmeye model.
     """
     
+    # Model config
     seed: int                           = 3407
     ''' Random seed '''
-    debug: bool                         = True
+    debug: bool                         = False
     ''' If debug = True, use a small dataset to test program '''
+    decoder_only: bool                  = True
+    ''' LLM type: encoder-decoder or decoder-only '''
+    model_type: str                     = "GLMv2"
+    ''' Support model type ["FLAN-T5", "GLMv2"], more models will be supported in the future🤗.'''
+    imgq_number: int                    = 1
+    ''' The number of <img-q>, recommand 1'''
+    imgd_number: int                    = 5
+    ''' The number of <img-d>'''
+
+    # Path config: model path, dataset path and checkpoint path
     output_dir: str                     = './output'
     ''' The path to save models '''
-    llm_path: str                       = "/root/data/model/blip2-GLM"
+    llm_path: str                       = "/root/data/model/blip2-GLM"  #"/root/data/model/blip2-flan-t5-xl"
     ''' The llm path need to load '''
-    checkpoint: Optional[str]           = None # "/root/data/model/LMEye/checkpoint_with_epoch1.pth"
+    checkpoint: Optional[str]           = None
     ''' The checkpoint path need to load '''
-    dataset: str                        = "/root/dataset/LLaVA-CC3M-Pretrain-595K/chat.json"
+    dataset: str                        = "/root/data/mutimodel_dataset/data_split/OCR-VQA/"
     ''' The train dataset path need to load '''
     mme_dataset: Optional[str]          = "./dataset/MME"
     ''' MME eval dataset '''
-    mmbench_dataset: Optional[str]      = None # "./dataset/MMBench/mmbench_dev_20230712.tsv"
+    mmbench_dataset: Optional[str]      = None  # "./dataset/MMBench/mmbench_dev_20230712.tsv"
     ''' MMBench eval dataset '''
-    model_type: str                     = "FLAN-T5"
-    ''' Base model type ["FLAN-T5", "GLM"] '''
-    decoder_only: bool                  = False
-    ''' LLM type: encoder-decoder or decoder-only '''
 
-    num_samples: int                    = 10000
+    # Training config                 
+    num_samples: int                    = 20000
     '''The number of data sampled from the training set in one training epoch'''
     num_train_epochs: int               = 20
     '''The number of train epochs'''
+    padding: int                        = 256
+    '''The max padding number'''
     batch_size: int                     = 8
     '''Train/eval batch size'''
     gradient_accumulation_steps: int    = 4
     '''Train gradient accumulation steps'''
-    logging_steps: int                  = 30
+    logging_steps: int                  = 20
     '''Logging steps'''
     save_steps: int                     = 1000
     '''Save steps'''
@@ -46,7 +66,6 @@ class Config(BaseModel):
     '''Learning rate'''
     scheduler: str                      = "constant"
     '''Which learning rate scheduler to use'''
-
     max_grad_norm: float                = 1.0
     '''Params grad clip'''
 
@@ -92,4 +111,4 @@ def parse_arguments() -> Config:
     update_config_values(base_config, args)
     return base_config
 
-config = parse_arguments()
+base_config = parse_arguments()

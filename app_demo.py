@@ -64,12 +64,12 @@ if __name__ == '__main__':
     clip_tokenizer = CLIPTokenizer.from_pretrained(clip_path)
 
     # loading blip-2
-    ckpt_dir = config.llm_path
+    ckpt_dir = base_config.llm_path
     model = Blip2InstructionQueryModel.from_pretrained(ckpt_dir)
     processor = Blip2Processor.from_pretrained(ckpt_dir)
     model.load_clip(clip_model)
 
-    params = torch.load(config.checkpoint, map_location='cpu')['net']
+    params = torch.load(base_config.checkpoint, map_location='cpu')['net']
 
     params_dict = {}
     for name, param in model.named_parameters():
