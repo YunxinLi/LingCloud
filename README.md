@@ -15,6 +15,8 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
+[08.04] We have achieved the first place on SEED-Bench, 9 dimmension of image understanding, [Here](https://arxiv.org/abs/2305.03701).
+
 [07.20] We have achieved the first place on the leaderboard of multimodal LLMs with less parameters, [MMBench](https://opencompass.org.cn/leaderboard-multimodal).
 
 [07.17] Please see a new LMEye version, The dynamically updated test address is https://b98ac22b615cc85dc4.gradio.live
