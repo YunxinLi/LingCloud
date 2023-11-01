@@ -67,7 +67,7 @@ All codes are shown in the file directory LMEye.
 
 2. You only need to run the train.py, achieving a LMEye variant based on BLIP-2.
     
-### Train
+### Train 
 1. If you want to train a similar model from scratch, you could use the train.py to perform the first-stage multimodal pretraining.
 
    Prepare the pretraining image-text pairs from the released corpus such as Laion, CC3M, etc, and use the frozen visual encoder (e.g., CLIP-ViT-L/14) to extract the image feature.
@@ -85,23 +85,12 @@ All codes are shown in the file directory LMEye.
 
 *The following test process about previous LMEye variant could be ignored.*
 
+
 We release the checkpoints of instruction version for LLaMA-7b/13b and Bloomz-7b1. You can download them from the repository in [Huggingface Hub](https://huggingface.co/YunxinLi).
     
 The checkpoints could be put in the /LMEye/output/ or anywhere you like. You can starting the LMEye quickly by running the following command.
 
-For Bloomz-7b1:
 
-`python /LMEye/LLMEye_test.py --llm_model bloomz-7b1 --predict_model_dir: your path of the checkpoint`
-
-For LLaMA-7b:
-
-`python /LMEye/LLMEye_test.py --llm_model llama-7b --predict_model_dir: your path of the checkpoint`
-
-For LLaMA-13b:
-
-`python /LMEye/LLMEye_test.py --llm_model llama-13b --predict_model_dir: your path of the checkpoint`
-
-More LMEye variants are coming soon!
 
 ## :rotating_light: Discussion
 
