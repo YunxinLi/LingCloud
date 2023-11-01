@@ -76,7 +76,7 @@ All codes are shown in the file directory LMEye.
 
    *At this stage, more powerful visual encoders are more important than language models.*
 
-3. The second-stage instruction-tuning: run_llm_instruction.py.
+3. The second-stage instruction-tuning: train.py.
 
     [Here](https://huggingface.co/datasets/YunxinLi/Multimodal_Instruction_data_v1), You can download the first or second version of Multimodal Instruction Data.
     The image source contains the COCO Caption, Flick30k, and the released multimodal instruction data from [LLaVA](https://github.com/haotian-liu/LLaVA).
@@ -85,10 +85,8 @@ All codes are shown in the file directory LMEye.
 
 *The following test process about previous LMEye variant could be ignored.*
 
-
 We release the checkpoints of instruction version for LLaMA-7b/13b and Bloomz-7b1. You can download them from the repository in [Huggingface Hub](https://huggingface.co/YunxinLi).
-    
-The checkpoints could be put in the /LMEye/output/ or anywhere you like. You can starting the LMEye quickly by running the following command.
+
 
 
 
