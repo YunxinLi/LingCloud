@@ -15,7 +15,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[Last] Our paper has been accepted by **IEEE Transactions on Multimedia (IEEE TMM)**, 2024.
+[Latest] Our paper has been accepted by **IEEE Transactions on Multimedia (IEEE TMM)**, 2024.
 
 [08.04] We have achieved the first place on SEED-Bench, 9 dimmension of image understanding, [Here](https://arxiv.org/abs/2305.03701).
 
