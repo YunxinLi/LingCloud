@@ -15,7 +15,7 @@ If you have any question, please feel free to contact me by e-mail: liyunxin987@
 
 ## :fire: News
 
-[Latest] Our paper has been accepted by **IEEE Transactions on Multimedia (IEEE TMM)**, 2024.
+[Latest] Our paper has been accepted by **IEEE Transactions on Multimedia (IEEE TMM)**, 2024. [Paper Link](https://ieeexplore.ieee.org/document/10598361/authors#authors)  
 
 [08.04] We have achieved the first place on SEED-Bench, 9 dimmension of image understanding, [Here](https://arxiv.org/abs/2305.03701).
 
@@ -106,12 +106,15 @@ Thanks everyone for your contributions.
 
 If you're using LMEye in your research or applications, please cite our work.
 ```
-@article{li2023lmeye,
-    title={LMEye: An Interactive Perception Network for Large Language Models},
-    author={Li, Yunxin and Hu, Baotian and Chen, Xinyu and Ma, Lin and Zhang, Min},
-    journal={arXiv preprint arXiv:2305.03701},
-    year={2023}
-}
+@ARTICLE{li_lmeye,
+  author={Li, Yunxin and Hu, Baotian and Chen, Xinyu and Ma, Lin and Xu, Yong and Zhang, Min},
+  journal={IEEE Transactions on Multimedia}, 
+  title={LMEye: An Interactive Perception Network for Large Language Models}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-13},
+  doi={10.1109/TMM.2024.3428317}}
 ```
 ## License
 This repository respects to Apache license 2.0.
